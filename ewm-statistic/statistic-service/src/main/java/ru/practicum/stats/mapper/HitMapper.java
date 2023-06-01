@@ -1,17 +1,15 @@
-package ru.practicum.ewm.mapper;
+package ru.practicum.stats.mapper;
 
-import ru.practicum.ewm.dto.CreatedHitDto;
-import ru.practicum.ewm.dto.HitDto;
-import ru.practicum.ewm.model.Hit;
+import lombok.experimental.UtilityClass;
+import ru.practicum.stats.dto.HitDto;
+import ru.practicum.stats.dto.OutputHitDto;
+import ru.practicum.stats.model.Hit;
 
+@UtilityClass
 public class HitMapper {
 
-    private HitMapper() {
-
-    }
-
-    public static CreatedHitDto toCreatedHitDto(Hit hit) {
-        return new CreatedHitDto(
+    public static OutputHitDto toCreatedHitDto(Hit hit) {
+        return new OutputHitDto(
                 hit.getId(),
                 hit.getApp(),
                 hit.getUri(),

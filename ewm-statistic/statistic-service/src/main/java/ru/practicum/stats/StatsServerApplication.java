@@ -1,4 +1,4 @@
-package ru.practicum.ewm;
+package ru.practicum.stats;
 
 import lombok.Generated;
 import org.springframework.boot.SpringApplication;

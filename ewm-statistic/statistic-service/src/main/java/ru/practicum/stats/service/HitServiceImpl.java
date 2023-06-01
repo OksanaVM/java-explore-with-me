@@ -1,15 +1,15 @@
-package ru.practicum.ewm.service;
+package ru.practicum.stats.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.ewm.dto.CreatedHitDto;
-import ru.practicum.ewm.dto.HitDto;
-import ru.practicum.ewm.dto.ViewStatDto;
-import ru.practicum.ewm.mapper.HitMapper;
-import ru.practicum.ewm.mapper.ViewStatMapper;
-import ru.practicum.ewm.model.Hit;
-import ru.practicum.ewm.repository.HitRepository;
+import ru.practicum.stats.dto.HitDto;
+import ru.practicum.stats.dto.OutputHitDto;
+import ru.practicum.stats.dto.ViewStatDto;
+import ru.practicum.stats.mapper.HitMapper;
+import ru.practicum.stats.mapper.ViewStatMapper;
+import ru.practicum.stats.model.Hit;
+import ru.practicum.stats.repository.HitRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,7 +22,7 @@ public class HitServiceImpl implements HitService {
 
     @Override
     @Transactional
-    public CreatedHitDto createdHitDto(HitDto hitDto) {
+    public OutputHitDto creatHit(HitDto hitDto) {
         Hit hit = HitMapper.toHit(hitDto);
 
         return HitMapper

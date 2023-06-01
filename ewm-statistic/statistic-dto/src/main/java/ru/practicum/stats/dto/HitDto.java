@@ -1,26 +1,27 @@
-package ru.practicum.ewm.dto;
+package ru.practicum.stats.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Value
 @Builder
-@AllArgsConstructor
 @Jacksonized
-public class HitDto implements Serializable {
+public class HitDto {
     @NotBlank
+    @Size(max = 255)
     String app;
     @NotBlank
+    @Size(max = 255)
     String uri;
     @NotBlank
+    @Size(max = 255)
     String ip;
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")

@@ -1,16 +1,14 @@
-package ru.practicum.ewm.mapper;
+package ru.practicum.stats.mapper;
 
-import ru.practicum.ewm.dto.ViewStatDto;
-import ru.practicum.ewm.model.ViewStat;
+import lombok.experimental.UtilityClass;
+import ru.practicum.stats.dto.ViewStatDto;
+import ru.practicum.stats.model.ViewStat;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@UtilityClass
 public class ViewStatMapper {
-
-    private ViewStatMapper() {
-
-    }
 
     public static List<ViewStatDto> toViewStatDto(List<ViewStat> viewStats) {
         return viewStats
