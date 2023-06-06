@@ -17,9 +17,9 @@
     <name>Explore With Me - Statistic Service</name>
 
     <modules>
-        <module>statistic-client</module>
-        <module>statistic-dto</module>
-        <module>statistic-service</module>
+        <module>ewm-statistic-client</module>
+        <module>ewm-statistic-dto</module>
+        <module>ewm-statistic-service</module>
     </modules>
 
 </project>
