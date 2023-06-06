@@ -1,5 +1,6 @@
 package ru.practicum.evm;
 
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.evm.dto.HitDto;
 import ru.practicum.evm.dto.ViewStatDto;
-import com.google.gson.Gson;
 
 import java.util.Arrays;
 import java.util.List;

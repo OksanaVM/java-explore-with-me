@@ -1,6 +1,9 @@
 package ru.practicum.ewm.events.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.ewm.categories.model.Category;
 import ru.practicum.ewm.events.dto.State;

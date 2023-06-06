@@ -3,14 +3,14 @@ package ru.practicum.ewm.events.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.categories.service.CategoryService;
 import ru.practicum.ewm.categories.dto.CategoryDto;
+import ru.practicum.ewm.categories.service.CategoryService;
 import ru.practicum.ewm.events.dto.EventDto;
 import ru.practicum.ewm.events.dto.NewEventDto;
 import ru.practicum.ewm.events.service.EventService;
-import ru.practicum.ewm.location.service.LocationService;
 import ru.practicum.ewm.location.dto.LocationDto;
 import ru.practicum.ewm.location.dto.NewLocationDto;
+import ru.practicum.ewm.location.service.LocationService;
 import ru.practicum.ewm.users.dto.UserDto;
 import ru.practicum.ewm.users.service.UserService;
 

@@ -13,7 +13,6 @@ import ru.practicum.ewm.events.model.Event;
 import ru.practicum.ewm.events.repository.EventRepository;
 import ru.practicum.ewm.exeption.NotFoundException;
 
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
