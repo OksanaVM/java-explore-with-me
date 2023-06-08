@@ -2,18 +2,19 @@ package ru.practicum.ewm.compilations.service;
 
 import ru.practicum.ewm.compilations.dto.CompilationDto;
 import ru.practicum.ewm.compilations.dto.NewCompilationDto;
+import ru.practicum.ewm.compilations.dto.UpdateCompilationRequest;
 
 import java.util.List;
 
 public interface CompilationService {
 
-    List<CompilationDto> getCompilations(Boolean pinned, Integer from, Integer size);
+    CompilationDto createCompilation(NewCompilationDto dto);
 
-    CompilationDto getCompilationById(Long compId);
+    void deleteCompilation(Long compId);
 
-    CompilationDto create(NewCompilationDto newCompilationDto);
+    CompilationDto updateCompilations(Long compId, UpdateCompilationRequest dto);
 
-    CompilationDto update(Long compId, NewCompilationDto compilationDto);
+    CompilationDto getCompilation(Long compId);
 
-    void delete(Long compId);
+    List<CompilationDto> getCompilationsByFilters(Boolean pinned, Integer from, Integer size);
 }

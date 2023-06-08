@@ -2,9 +2,8 @@ package ru.practicum.ewm.compilations.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Value;
 import org.hibernate.validator.constraints.Length;
-import ru.practicum.ewm.events.dto.EventDto;
+
 import ru.practicum.ewm.events.dto.EventsShortDto;
 
 import javax.validation.constraints.NotBlank;
@@ -20,4 +19,3 @@ public class CompilationDto {
     @Length(max = 50)
     private String title;
 }
-

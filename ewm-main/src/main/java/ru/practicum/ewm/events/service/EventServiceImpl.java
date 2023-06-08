@@ -3,14 +3,15 @@ package ru.practicum.ewm.events.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.evm.StatisticClient;
-import ru.practicum.evm.dto.EndpointHitDto;
-import ru.practicum.evm.dto.ViewStatDto;
+import ru.practicum.client.StatisticClient;
+import ru.practicum.dto.EndpointHitDto;
+import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.ewm.categories.model.Category;
 import ru.practicum.ewm.categories.repository.CategoryRepository;
 import ru.practicum.ewm.events.dto.*;
@@ -21,8 +22,6 @@ import ru.practicum.ewm.exeption.IncorrectStateException;
 import ru.practicum.ewm.exeption.NotFoundException;
 import ru.practicum.ewm.location.model.Location;
 import ru.practicum.ewm.location.repository.LocationRepository;
-import ru.practicum.ewm.requests.model.RequestStat;
-import ru.practicum.ewm.requests.repository.RequestRepository;
 import ru.practicum.ewm.users.model.User;
 import ru.practicum.ewm.users.repository.UserRepository;
 
@@ -33,13 +32,13 @@ import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
 import static ru.practicum.ewm.UtilityClass.formatter;
-import static ru.practicum.ewm.events.dto.SortVariant.EVENT_DATE;
-import static ru.practicum.ewm.events.dto.SortVariant.VIEWS;
 import static ru.practicum.ewm.events.service.EventMapper.toEvent;
 import static ru.practicum.ewm.events.service.EventMapper.toEventFullDto;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
+@ComponentScan(basePackages = {"ru.practicum.client"})
 public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
@@ -51,7 +50,6 @@ public class EventServiceImpl implements EventService {
     private final CategoryRepository categoryRepository;
 
 
-    @Override
     @Transactional
     public EventFullDto create(Long userId, NewEventDto newEventDto) {
         if (newEventDto.getPaid() == null) {
@@ -81,8 +79,7 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    @Override
-    @Transactional(readOnly = true)
+
     public List<EventsShortDto> getEventsByUserId(Long userId, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from, size);
         User user = checkUser(userId);
@@ -94,8 +91,7 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    @Transactional(readOnly = true)
+
     public EventFullDto getEventByUserIdAndEventId(Long userId, Long eventId) {
         checkUser(userId);
         Event event = findEventById(eventId);
@@ -103,11 +99,7 @@ public class EventServiceImpl implements EventService {
         event.setViews(hits.get(event.getId()));
         return toEventFullDto(event);
     }
-    private Event findEventById(Long eventId) {
-        return eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("Событие с таким id не найдено"));
-    }
-    @Override
+
     @Transactional
     public EventFullDto updateEventByUserIdAndEventId(Long userId, Long eventId, UpdateEvent dto) {
         Event event = findEventById(eventId);
@@ -137,27 +129,8 @@ public class EventServiceImpl implements EventService {
         event.setViews(hits.get(event.getId()));
         return toEventFullDto(updatedEventFromDB);
     }
-    private Event updateEventFields(Event event, UpdateEvent dto) {
-        ofNullable(dto.getAnnotation()).ifPresent(event::setAnnotation);
-        ofNullable(dto.getCategory()).ifPresent(category -> event.setCategory(categoryRepository.findById(category)
-                .orElseThrow(() -> new NotFoundException("Категория с таким id  не найдена"))));
-        ofNullable(dto.getDescription()).ifPresent(event::setDescription);
-        ofNullable(dto.getEventDate()).ifPresent(
-                event::setEventDate);
-        if (dto.getLocation() != null) {
-            List<Location> location = locationRepository.findByLatAndLon(dto.getLocation().getLat(), dto.getLocation().getLon());
-            if (location.isEmpty()) {
-                locationRepository.save(dto.getLocation());
-            }
-            event.setLocation(dto.getLocation());
-        }
-        ofNullable(dto.getPaid()).ifPresent(event::setPaid);
-        ofNullable(dto.getParticipantLimit()).ifPresent(event::setParticipantLimit);
-        ofNullable(dto.getRequestModeration()).ifPresent(event::setRequestModeration);
-        ofNullable(dto.getTitle()).ifPresent(event::setTitle);
-        return event;
-    }
-    @Override
+
+
     @Transactional
     public EventFullDto updateEventByEventId(Long eventId, UpdateEvent dto) {
         Event event = findEventById(eventId);
@@ -203,8 +176,7 @@ public class EventServiceImpl implements EventService {
         return toEventFullDto(updatedEventFromDB);
     }
 
-    @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<EventFullDto> getEvents(List<Long> users, List<String> states, List<Long> categories,
                                         LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size) {
         Pageable page = PageRequest.of(from, size);
@@ -231,8 +203,7 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<EventsShortDto> getPublicEvents(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
                                                 LocalDateTime rangeEnd, Boolean onlyAvailable, String sort, Integer from,
                                                 Integer size, HttpServletRequest request) {
@@ -296,22 +267,12 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toList());
     }
 
-    private void checkDateTime(LocalDateTime start, LocalDateTime end) {
-        if (start == null) {
-            start = LocalDateTime.now().minusYears(100);
-        }
-        if (end == null) {
-            end = LocalDateTime.now();
-        }
-        if (start.isAfter(end)) {
-            throw new BadRequestException("Некорректный запрос. Дата окончания события задана позже даты стартаю");
-        }
-    }
+
     /**
      * Получение полной информации об опубликованном событии по его идентификатору
      */
-    @Override
-    @Transactional(readOnly = true)
+
+    @Transactional
     public EventFullDto getPublicEventById(Long eventId,HttpServletRequest request) {
         Event event = findEventById(eventId);
         if (!event.getState().equals(State.PUBLISHED)) {
@@ -322,6 +283,27 @@ public class EventServiceImpl implements EventService {
         Map<Long, Long> hits = getStatisticFromListEvents(List.of(event));
         event.setViews(hits.get(event.getId()));
         return toEventFullDto(event);
+    }
+
+    private Event updateEventFields(Event event, UpdateEvent dto) {
+        ofNullable(dto.getAnnotation()).ifPresent(event::setAnnotation);
+        ofNullable(dto.getCategory()).ifPresent(category -> event.setCategory(categoryRepository.findById(category)
+                .orElseThrow(() -> new NotFoundException("Категория с таким id  не найдена"))));
+        ofNullable(dto.getDescription()).ifPresent(event::setDescription);
+        ofNullable(dto.getEventDate()).ifPresent(
+                event::setEventDate);
+        if (dto.getLocation() != null) {
+            List<Location> location = locationRepository.findByLatAndLon(dto.getLocation().getLat(), dto.getLocation().getLon());
+            if (location.isEmpty()) {
+                locationRepository.save(dto.getLocation());
+            }
+            event.setLocation(dto.getLocation());
+        }
+        ofNullable(dto.getPaid()).ifPresent(event::setPaid);
+        ofNullable(dto.getParticipantLimit()).ifPresent(event::setParticipantLimit);
+        ofNullable(dto.getRequestModeration()).ifPresent(event::setRequestModeration);
+        ofNullable(dto.getTitle()).ifPresent(event::setTitle);
+        return event;
     }
 
     /**
@@ -337,14 +319,19 @@ public class EventServiceImpl implements EventService {
         List<String> uris = idEvents.stream().map(id -> eventsUri + id).collect(Collectors.toList());
         ResponseEntity<Object> response = statisticClient.getStatistic(start, end, uris, true);
         ObjectMapper objectMapper = new ObjectMapper();
-        List<ViewStatDto> viewStatsDto = objectMapper.convertValue(response.getBody(), new TypeReference<>() {
+        List<ViewStatsDto> viewStatsDto = objectMapper.convertValue(response.getBody(), new TypeReference<>() {
         });
         Map<Long, Long> hits = new HashMap<>();
-        for (ViewStatDto statsDto : viewStatsDto) {
+        for (ViewStatsDto statsDto : viewStatsDto) {
             String uri = statsDto.getUri();
             hits.put(Long.parseLong(uri.substring(eventsUri.length())), statsDto.getHits());
         }
         return hits;
+    }
+
+    private Event findEventById(Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Событие с таким id не найдено"));
     }
 
     private void addStatistic(HttpServletRequest request) {
@@ -358,22 +345,23 @@ public class EventServiceImpl implements EventService {
     }
 
 
-    private Map<Long, Long> getRequestStatsMap(List<RequestStat> requestStats) {
-        Map<Long, Long> requestStatsMap = new HashMap<>();
-
-        for (RequestStat requestStat : requestStats) {
-            requestStatsMap.put(requestStat.getEventId(), requestStat.getRequests());
-        }
-
-        return requestStatsMap;
-    }
-
-
-
     private User checkUser(Long idUser) {
         return userRepository.findById(idUser)
                 .orElseThrow(() -> new NotFoundException("Пользователь с таким id  не найден"));
     }
+
+    private void checkDateTime(LocalDateTime start, LocalDateTime end) {
+        if (start == null) {
+            start = LocalDateTime.now().minusYears(100);
+        }
+        if (end == null) {
+            end = LocalDateTime.now();
+        }
+        if (start.isAfter(end)) {
+            throw new BadRequestException("Некорректный запрос. Дата окончания события задана позже даты стартаю");
+        }
+    }
+
 
 
 }

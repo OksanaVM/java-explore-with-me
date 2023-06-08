@@ -22,11 +22,6 @@ public class PrivateEventsController {
 
     private final EventService eventService;
 
-    private final LocationService locationService;
-
-    private final UserService userService;
-
-    private final CategoryService categoryService;
 
     @PostMapping("/users/{userId}/events")
     @ResponseStatus(HttpStatus.CREATED)

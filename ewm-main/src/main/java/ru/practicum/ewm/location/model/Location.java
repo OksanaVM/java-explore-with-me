@@ -4,20 +4,19 @@ import lombok.*;
 
 import javax.persistence.*;
 
-@Entity
-@Table(name = "locations")
 @Getter
-@Setter
-@ToString
-@NoArgsConstructor
+@Builder
+@Entity
 @AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "location")
 public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "lat", nullable = false)
+    @Column(name = "latitude")
     private Float lat;
-    @Column(name = "lon", nullable = false)
+    @Column(name = "longitude")
     private Float lon;
 }
 

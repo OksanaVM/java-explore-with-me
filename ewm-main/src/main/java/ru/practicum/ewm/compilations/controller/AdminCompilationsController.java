@@ -1,35 +1,44 @@
 package ru.practicum.ewm.compilations.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.compilations.dto.CompilationDto;
 import ru.practicum.ewm.compilations.dto.NewCompilationDto;
+import ru.practicum.ewm.compilations.dto.UpdateCompilationRequest;
 import ru.practicum.ewm.compilations.service.CompilationService;
 
 import javax.validation.Valid;
 
+@Slf4j
+@Validated
 @RestController
+@RequestMapping(path = "/admin/compilations")
 @RequiredArgsConstructor
 public class AdminCompilationsController {
+    private final CompilationService service;
 
-    private final CompilationService compilationService;
-
-    @PostMapping("/admin/compilations")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CompilationDto create(@RequestBody @Valid NewCompilationDto newCompilationDto) {
-        return compilationService.create(newCompilationDto);
+    public CompilationDto createCompilation(@RequestBody @Valid NewCompilationDto dto) {
+        log.info("Create compilation {}", dto);
+        return service.createCompilation(dto);
     }
 
-    @PatchMapping("/admin/compilations/{compId}")
-    public CompilationDto update(@PathVariable("compId") Long compId,
-                                 @RequestBody NewCompilationDto newCompilationDto) {
-        return compilationService.update(compId, newCompilationDto);
-    }
-
-    @DeleteMapping("/admin/compilations/{compId}")
+    @DeleteMapping("{compId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("compId") Long compId) {
-        compilationService.delete(compId);
+    public void deleteCompilation(@PathVariable Long compId) {
+        log.info("Delete compilation {}", compId);
+        service.deleteCompilation(compId);
+    }
+
+    @PatchMapping("{compId}")
+    public CompilationDto updateCompilations(@PathVariable Long compId,
+                                             @RequestBody @Valid UpdateCompilationRequest dto) {
+        log.info("Update compilation with compId {}, dto {}", compId, dto);
+        return service.updateCompilations(compId, dto);
     }
 }
+

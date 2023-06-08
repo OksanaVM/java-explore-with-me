@@ -1,4 +1,4 @@
-package ru.practicum.evm.exeption;
+package ru.practicum.exeption;
 
 public class StartEndRangeException extends RuntimeException {
 

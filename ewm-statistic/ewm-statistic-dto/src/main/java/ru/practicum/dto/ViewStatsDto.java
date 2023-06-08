@@ -1,14 +1,13 @@
-package ru.practicum.evm.dto;
+package ru.practicum.dto;
 
 import lombok.*;
-import lombok.extern.jackson.Jacksonized;
 
 
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ViewStatDto {
+public class ViewStatsDto {
     String app;
     String uri;
     Long hits;

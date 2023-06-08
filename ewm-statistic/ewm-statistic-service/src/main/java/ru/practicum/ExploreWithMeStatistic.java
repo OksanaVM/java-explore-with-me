@@ -1,4 +1,4 @@
-package ru.practicum.evm;
+package ru.practicum;
 
 import lombok.Generated;
 import org.springframework.boot.SpringApplication;

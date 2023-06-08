@@ -1,27 +1,27 @@
-package ru.practicum.evm.model;
+package ru.practicum.model;
 
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "endpoint_hit")
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "ENDPOINT_HIT")
 public class EndpointHit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "app", nullable = false)
+    @Column(name = "app")
     private String app;
-    @Column(name = "uri", nullable = false)
+    @Column(name = "uri")
     private String uri;
-    @Column(name = "ip", nullable = false)
+    @Column(name = "ip")
     private String ip;
-    @Column(name = "timestamp", nullable = false)
+    @Column(name = "created")
     private LocalDateTime timestamp;
 }
+
