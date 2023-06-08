@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import ru.practicum.evm.dto.EndpointHitDto;
 import ru.practicum.evm.dto.HitDto;
 import ru.practicum.evm.dto.ViewStatDto;
 
@@ -28,27 +29,18 @@ public class StatisticClient extends BaseClient {
         );
     }
 
-    public ViewStatDto createHit(HitDto hitDto) {
-        Gson gson = new Gson();
-        ResponseEntity<Object> objectResponseEntity = post("/hit", hitDto);
-        String json = gson.toJson(objectResponseEntity.getBody());
-
-        return gson.fromJson(json, ViewStatDto.class);
+    public ResponseEntity<Object> addStatistic(EndpointHitDto endpointHitDto) {
+        return post("/hit", endpointHitDto);
     }
 
-    public List<ViewStatDto> getStats(String start, String end, List<String> uris, Boolean unique) {
-        Gson gson = new Gson();
+    public ResponseEntity<Object> getStatistic(String start, String end, List<String> uris, Boolean unique) {
         Map<String, Object> parameters = Map.of(
-                "uris", String.join(",", uris),
-                "unique", unique,
                 "start", start,
-                "end", end
+                "end", end,
+                "uris", String.join(",", uris),
+                "unique", unique
         );
-        ResponseEntity<Object> objectResponseEntity =
-                get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);
-        String json = gson.toJson(objectResponseEntity.getBody());
-        ViewStatDto[] viewStatDtoArray = gson.fromJson(json, ViewStatDto[].class);
-
-        return Arrays.asList(viewStatDtoArray);
+        return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);
     }
+
 }

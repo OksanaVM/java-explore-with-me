@@ -2,6 +2,7 @@ package ru.practicum.ewm.users.service;
 
 import ru.practicum.ewm.users.dto.NewUserDto;
 import ru.practicum.ewm.users.dto.UserDto;
+import ru.practicum.ewm.users.dto.UserShortDto;
 import ru.practicum.ewm.users.model.User;
 
 import java.util.List;
@@ -25,6 +26,12 @@ public class UserMapper {
                 user.getId(),
                 user.getName(),
                 user.getEmail());
+    }
+    public static UserShortDto toUserShortDto(User user) {
+        return UserShortDto.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .build();
     }
 
     public static List<UserDto> toUserDto(List<User> users) {

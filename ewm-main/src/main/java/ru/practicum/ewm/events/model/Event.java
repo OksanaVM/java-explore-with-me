@@ -1,9 +1,6 @@
 package ru.practicum.ewm.events.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.ewm.categories.model.Category;
 import ru.practicum.ewm.events.dto.State;
@@ -19,6 +16,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @NamedEntityGraph(
         name = "event",
         attributeNodes = {
@@ -37,7 +35,7 @@ public class Event {
     @JoinColumn(name = "category_id")
     private Category category;
     @Column(name = "confirmed_requests", nullable = false)
-    private int confirmedRequests;
+    private Long confirmedRequests;
     @Column(name = "created_on", nullable = false)
     @CreationTimestamp
     private LocalDateTime createdOn;
@@ -54,7 +52,7 @@ public class Event {
     @Column(name = "paid", nullable = false)
     private Boolean paid;
     @Column(name = "participant_limit", nullable = false)
-    private Integer participantLimit;
+    private Long participantLimit;
     @Column(name = "published_on", nullable = false)
     private LocalDateTime publishedOn;
     @Column(name = "request_moderation", nullable = false)
@@ -63,4 +61,6 @@ public class Event {
     private State state;
     @Column(name = "title", nullable = false)
     private String title;
+    @Column(name = "views")
+    private Long views;
 }

@@ -34,6 +34,13 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMissingIdException(StartEndRangeException exception) {
+        log.debug("Получен статус 404 Not found {}", exception.getMessage(), exception);
+        return new ErrorResponse(exception.getMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(Throwable throwable) {
         log.error("Unknown error", throwable);

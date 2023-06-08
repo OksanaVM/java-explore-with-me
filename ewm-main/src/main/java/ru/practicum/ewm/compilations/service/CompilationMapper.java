@@ -20,10 +20,14 @@ public class CompilationMapper {
     }
 
     public static CompilationDto toCompilationDto(Compilation compilation) {
-        return new CompilationDto(compilation.getId(),
-                compilation.getPinned(),
-                compilation.getTitle(),
-                EventMapper.toEventDto(compilation.getEvents()));
+        return CompilationDto.builder()
+                .id(compilation.getId())
+                .events(compilation.getEvents().stream()
+                        .map(EventMapper::toEventShortDto)
+                        .collect(Collectors.toList()))
+                .pinned(compilation.getPinned())
+                .title(compilation.getTitle())
+                .build();
     }
 
     public static Compilation toCompilation(NewCompilationDto newCompilationDto) {

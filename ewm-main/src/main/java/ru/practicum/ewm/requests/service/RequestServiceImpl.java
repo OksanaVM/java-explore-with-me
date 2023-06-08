@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.events.dto.State;
 import ru.practicum.ewm.events.model.Event;
 import ru.practicum.ewm.events.repository.EventRepository;
+import ru.practicum.ewm.exeption.ConflictException;
 import ru.practicum.ewm.exeption.NotFoundException;
-import ru.practicum.ewm.exeption.OperationException;
 import ru.practicum.ewm.requests.dto.NewRequestUpdateDto;
 import ru.practicum.ewm.requests.dto.RequestDto;
 import ru.practicum.ewm.requests.dto.RequestUpdateDto;
@@ -104,19 +104,19 @@ public class RequestServiceImpl implements RequestService {
 
     private void validateEventInitiator(Long userId, Event event) {
         if (event.getInitiator().getId().equals(userId)) {
-            throw new OperationException(REQUEST_SAME_USER_ID_EXCEPTION_MESSAGE);
+            throw new ConflictException("У события достигнут лимит запросов на участие.");
         }
     }
 
     private void validateEventState(Event event) {
         if (!event.getState().equals(State.PUBLISHED)) {
-            throw new OperationException(REQUEST_STATE_EXCEPTION_MESSAGE);
+            throw new ConflictException("У события достигнут лимит запросов на участие.");
         }
     }
 
     private void checkParticipantLimit(Event event, List<Request> requests) {
         if (requests.size() >= event.getParticipantLimit()) {
-            throw new OperationException(REQUEST_LIMIT_EXCEPTION_MESSAGE);
+            throw new ConflictException("У события достигнут лимит запросов на участие.");
         }
     }
 
@@ -129,19 +129,19 @@ public class RequestServiceImpl implements RequestService {
 
     private void validateNewRequestUpdateDto(NewRequestUpdateDto newRequestUpdateDto) {
         if (newRequestUpdateDto == null) {
-            throw new OperationException(REQUEST_LIMIT_EXCEPTION_MESSAGE);
+            throw new ConflictException("У события достигнут лимит запросов на участие.");
         }
     }
 
     private Event findEventById(Long eventId) {
         return eventRepository.findById(eventId).orElseThrow(() -> {
-            throw new OperationException(String.format(EVENT_NOT_FOUND_MESSAGE, eventId));
+            throw new ConflictException("У события достигнут лимит запросов на участие.");
         });
     }
 
     private void checkEventParticipantLimit(Event event) {
         if (event.getConfirmedRequests() >= event.getParticipantLimit()) {
-            throw new OperationException(REQUEST_LIMIT_EXCEPTION_MESSAGE);
+            throw new ConflictException("У события достигнут лимит запросов на участие.");
         }
     }
 
@@ -170,7 +170,7 @@ public class RequestServiceImpl implements RequestService {
     private void validateRequestStatus(NewRequestUpdateDto newRequestUpdateDto, Request request) {
         if (request.getStatus().equals(State.CONFIRMED) &&
                 newRequestUpdateDto.getStatus().equals(State.REJECTED)) {
-            throw new OperationException(REQUEST_LIMIT_EXCEPTION_MESSAGE);
+            throw new ConflictException("У события достигнут лимит запросов на участие.");
         }
     }
 

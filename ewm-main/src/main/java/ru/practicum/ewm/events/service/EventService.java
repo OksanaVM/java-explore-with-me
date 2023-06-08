@@ -1,34 +1,32 @@
 package ru.practicum.ewm.events.service;
 
 import ru.practicum.ewm.categories.dto.CategoryDto;
-import ru.practicum.ewm.events.dto.EventDto;
-import ru.practicum.ewm.events.dto.NewEventDto;
-import ru.practicum.ewm.events.dto.SortVariant;
-import ru.practicum.ewm.events.dto.State;
+import ru.practicum.ewm.events.dto.*;
 import ru.practicum.ewm.location.dto.LocationDto;
 import ru.practicum.ewm.users.dto.UserDto;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EventService {
 
-    EventDto create(NewEventDto newEventDto, LocationDto locationDto, UserDto userDto, CategoryDto categoryDto);
+    EventFullDto create(Long userId, NewEventDto newEventDto);
 
-    List<EventDto> getEventsByUserId(Long userId, Integer from, Integer size);
+    List<EventsShortDto> getEventsByUserId(Long userId, Integer from, Integer size);
 
-    EventDto getEventByUserIdAndEventId(Long userId, Long eventId);
+    EventFullDto getEventByUserIdAndEventId(Long userId, Long eventId);
 
-    EventDto updateEventByUserIdAndEventId(Long userId, Long eventId, NewEventDto newEventDto);
+    EventFullDto updateEventByUserIdAndEventId(Long userId, Long eventId, UpdateEvent dto);
 
-    EventDto updateEventByEventId(Long eventId, NewEventDto newEventDto);
+    EventFullDto updateEventByEventId(Long eventId, UpdateEvent dto);
 
-    List<EventDto> getEvents(LocalDateTime rangeStart, LocalDateTime rangeEnd, List<Long> users,
-                             List<State> states, List<Long> categories, Integer from, Integer size);
+    List<EventFullDto> getEvents(List<Long> users, List<String> states, List<Long> categories,
+                             LocalDateTime rangeStart, LocalDateTime rangeEnd, Integer from, Integer size);
 
-    List<EventDto> getPublicEvents(Integer from, Integer size, State state,
-                                   String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
-                                   LocalDateTime rangeEnd, SortVariant sort, Boolean onlyAvailable, String ip, String uri);
+    List<EventsShortDto> getPublicEvents(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
+                                   LocalDateTime rangeEnd, Boolean onlyAvailable, String sort, Integer from,
+                                   Integer size, HttpServletRequest request);
 
-    EventDto getPublicEventById(Long eventId, String ip, String url);
+    EventFullDto getPublicEventById(Long eventId, HttpServletRequest request);
 }

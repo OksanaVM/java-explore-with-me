@@ -1,11 +1,13 @@
 package ru.practicum.evm.dto;
 
-import lombok.Value;
+import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
 
-@Value
-@Jacksonized
+@Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ViewStatDto {
     String app;
     String uri;
