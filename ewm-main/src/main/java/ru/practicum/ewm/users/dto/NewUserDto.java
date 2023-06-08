@@ -1,15 +1,22 @@
 package ru.practicum.ewm.users.dto;
 
-import lombok.Value;
+import lombok.Builder;
+import lombok.Getter;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-@Value
+@Getter
+@Builder
 public class NewUserDto {
+    private Long id;
     @NotBlank
-    String name;
-    @Email(regexp = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
+    @Length(min = 2, max = 250)
+    private String name;
+    @Email
     @NotBlank
-    String email;
+    @Length(min = 6, max = 254)
+    private String email;
 }
+

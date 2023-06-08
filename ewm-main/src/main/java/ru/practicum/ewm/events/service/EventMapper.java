@@ -2,28 +2,21 @@ package ru.practicum.ewm.events.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import ru.practicum.ewm.categories.dto.CategoryDto;
 import ru.practicum.ewm.categories.model.Category;
-import ru.practicum.ewm.events.dto.*;
+import ru.practicum.ewm.events.dto.EventFullDto;
+import ru.practicum.ewm.events.dto.EventsShortDto;
+import ru.practicum.ewm.events.dto.NewEventDto;
+import ru.practicum.ewm.events.dto.State;
 import ru.practicum.ewm.events.model.Event;
-import ru.practicum.ewm.location.dto.LocationDto;
-import ru.practicum.ewm.location.dto.NewLocationDto;
-import ru.practicum.ewm.location.model.Location;
-import ru.practicum.ewm.users.dto.UserDto;
-import ru.practicum.ewm.users.dto.UserShortDto;
 import ru.practicum.ewm.users.model.User;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static ru.practicum.ewm.categories.service.CategoryMapper.toCategoryDto;
 import static ru.practicum.ewm.users.service.UserMapper.toUserShortDto;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EventMapper {
-
 
 
 //    public static Event toEvent(NewEventDto newEventDto,

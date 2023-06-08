@@ -18,10 +18,17 @@ import ru.practicum.ewm.events.dto.*;
 import ru.practicum.ewm.events.model.Event;
 import ru.practicum.ewm.events.repository.EventRepository;
 import ru.practicum.ewm.exeption.BadRequestException;
+import ru.practicum.ewm.exeption.ConflictException;
 import ru.practicum.ewm.exeption.IncorrectStateException;
 import ru.practicum.ewm.exeption.NotFoundException;
 import ru.practicum.ewm.location.model.Location;
 import ru.practicum.ewm.location.repository.LocationRepository;
+import ru.practicum.ewm.requests.dto.EventRequestStatusUpdateRequest;
+import ru.practicum.ewm.requests.dto.EventRequestStatusUpdateResult;
+import ru.practicum.ewm.requests.dto.ParticipationRequestDto;
+import ru.practicum.ewm.requests.model.Request;
+import ru.practicum.ewm.requests.repository.RequestRepository;
+import ru.practicum.ewm.requests.service.RequestMapper;
 import ru.practicum.ewm.users.model.User;
 import ru.practicum.ewm.users.repository.UserRepository;
 
@@ -34,6 +41,7 @@ import static java.util.Optional.ofNullable;
 import static ru.practicum.ewm.UtilityClass.formatter;
 import static ru.practicum.ewm.events.service.EventMapper.toEvent;
 import static ru.practicum.ewm.events.service.EventMapper.toEventFullDto;
+import static ru.practicum.ewm.requests.service.RequestMapper.toRequestDto;
 
 @Service
 @Transactional(readOnly = true)
@@ -46,7 +54,7 @@ public class EventServiceImpl implements EventService {
     private final StatisticClient statisticClient;
     private final LocationRepository locationRepository;
     private final UserRepository userRepository;
-
+    private final RequestRepository requestRepository;
     private final CategoryRepository categoryRepository;
 
 
@@ -273,7 +281,7 @@ public class EventServiceImpl implements EventService {
      */
 
     @Transactional
-    public EventFullDto getPublicEventById(Long eventId,HttpServletRequest request) {
+    public EventFullDto getPublicEventById(Long eventId, HttpServletRequest request) {
         Event event = findEventById(eventId);
         if (!event.getState().equals(State.PUBLISHED)) {
             throw new NotFoundException("Событие еще не опубликовано");
@@ -306,6 +314,69 @@ public class EventServiceImpl implements EventService {
         return event;
     }
 
+    @Transactional
+    public EventRequestStatusUpdateResult changeRequestsStatus(Long userId, Long eventId, EventRequestStatusUpdateRequest dto) {
+        List<ParticipationRequestDto> confirmedRequests = new ArrayList<>();
+        List<ParticipationRequestDto> rejectedRequests = new ArrayList<>();
+        checkUser(userId);
+        Event event = findEventById(eventId);
+        if (!event.getRequestModeration() || event.getParticipantLimit().equals(0L)) {
+            throw new ConflictException("Подтверждение заявок не требуется");
+        }
+        long limitBalance = event.getParticipantLimit() - event.getConfirmedRequests();
+        if (event.getParticipantLimit() != 0 && limitBalance <= 0) {
+            throw new ConflictException("У события достигнут лимит запросов на участие.");
+        }
+        if (dto.getStatus().equals(State.REJECTED.toString())) {
+            for (Long requestId : dto.getRequestIds()) {
+                Request request = requestRepository.findById(requestId)
+                        .orElseThrow(() -> new NotFoundException("Запроса c id = " + requestId + " не найдено."));
+                if (request.getStatus().equals(State.PENDING)) {
+                    request.setStatus(State.REJECTED);
+                    requestRepository.save(request);
+                    rejectedRequests.add(toRequestDto(request));
+                }
+            }
+        }
+        for (int i = 0; i < dto.getRequestIds().size(); i++) {
+            if (limitBalance != 0) {
+                int finalI1 = i;
+                Request request = requestRepository.findById(dto.getRequestIds().get(i))
+                        .orElseThrow(() -> new NotFoundException("Запроса c id = " + finalI1 + " не найдено."));
+                if (request.getStatus().equals(State.PENDING)) {
+                    request.setStatus(State.CONFIRMED);
+                    event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+                    eventRepository.save(event);
+                    requestRepository.save(request);
+                    confirmedRequests.add(toRequestDto(request));
+                    limitBalance--;
+                }
+            } else {
+                int finalI = i;
+                Request request = requestRepository.findById(dto.getRequestIds().get(i))
+                        .orElseThrow(() -> new NotFoundException("Запроса c id = " + finalI + " не найдено."));
+                if (request.getStatus().equals(State.PENDING)) {
+                    request.setStatus(State.REJECTED);
+                    requestRepository.save(request);
+                    rejectedRequests.add(toRequestDto(request));
+                }
+            }
+        }
+        return EventRequestStatusUpdateResult.builder()
+                .confirmedRequests(confirmedRequests)
+                .rejectedRequests(rejectedRequests)
+                .build();
+    }
+
+    public List<ParticipationRequestDto> getRequestsForUserForThisEvent(Long userId, Long eventId) {
+        checkUser(userId);
+        findEventById(eventId);
+        List<Request> requests = requestRepository.findByEventId(eventId);
+        return requests.stream()
+                .map(RequestMapper::toRequestDto)
+                .collect(Collectors.toList());
+    }
+
     /**
      * Получение информации о просмотрах из сервиса статистики
      */
@@ -328,6 +399,7 @@ public class EventServiceImpl implements EventService {
         }
         return hits;
     }
+
 
     private Event findEventById(Long eventId) {
         return eventRepository.findById(eventId)
@@ -361,7 +433,6 @@ public class EventServiceImpl implements EventService {
             throw new BadRequestException("Некорректный запрос. Дата окончания события задана позже даты стартаю");
         }
     }
-
 
 
 }

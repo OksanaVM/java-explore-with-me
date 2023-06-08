@@ -3,7 +3,6 @@ package ru.practicum.ewm.categories.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.categories.dto.CategoryDto;
 import ru.practicum.ewm.categories.dto.NewCategoryDto;
 import ru.practicum.ewm.categories.service.CategoryService;
 
@@ -30,7 +29,7 @@ public class AdminCategoriesController {
 
     @PatchMapping("/categories/{categoryId}")
     public NewCategoryDto updateCategoryById(@PathVariable("categoryId") Long categoryId,
-                                          @RequestBody @Valid NewCategoryDto newCategoryDto) {
+                                             @RequestBody @Valid NewCategoryDto newCategoryDto) {
         return categoryService.updateCategoryById(categoryId, newCategoryDto);
     }
 }

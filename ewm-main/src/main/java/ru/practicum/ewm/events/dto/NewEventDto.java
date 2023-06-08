@@ -2,8 +2,6 @@ package ru.practicum.ewm.events.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
-import lombok.extern.jackson.Jacksonized;
-import ru.practicum.ewm.location.dto.LocationDto;
 import ru.practicum.ewm.location.model.Location;
 
 import javax.validation.constraints.NotBlank;

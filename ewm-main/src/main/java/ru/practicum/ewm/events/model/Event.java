@@ -1,7 +1,6 @@
 package ru.practicum.ewm.events.model;
 
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.ewm.categories.model.Category;
 import ru.practicum.ewm.events.dto.State;
 import ru.practicum.ewm.location.model.Location;

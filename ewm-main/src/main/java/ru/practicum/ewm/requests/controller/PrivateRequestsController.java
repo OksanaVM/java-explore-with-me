@@ -1,48 +1,42 @@
 package ru.practicum.ewm.requests.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.requests.dto.NewRequestUpdateDto;
-import ru.practicum.ewm.requests.dto.RequestDto;
-import ru.practicum.ewm.requests.dto.RequestUpdateDto;
+import ru.practicum.ewm.requests.dto.ParticipationRequestDto;
 import ru.practicum.ewm.requests.service.RequestService;
 
 import java.util.List;
 
+
+@Slf4j
+@Validated
 @RestController
+@RequestMapping(path = "/users/{userId}/requests")
 @RequiredArgsConstructor
 public class PrivateRequestsController {
-    private final RequestService requestService;
+    private final RequestService service;
 
-    @PostMapping("/users/{userId}/requests")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public RequestDto create(@PathVariable("userId") Long userId,
-                             @RequestParam(value = "eventId") Long eventId) {
-        return requestService.create(userId, eventId);
+    public ParticipationRequestDto createRequest(@PathVariable Long userId,
+                                                 @RequestParam Long eventId) {
+        log.info("Create Request from userId {}, eventId {}", userId, eventId);
+        return service.createRequest(userId, eventId);
     }
 
-    @GetMapping("/users/{userId}/requests")
-    public List<RequestDto> getRequestsById(@PathVariable("userId") Long userId) {
-        return requestService.getRequestsById(userId);
+    @GetMapping
+    public List<ParticipationRequestDto> getRequestsForUser(@PathVariable Long userId) {
+        log.info("Get Requests for userId {}", userId);
+        return service.getRequestsForUser(userId);
     }
 
-    @GetMapping("/users/{userId}/events/{eventId}/requests")
-    public List<RequestDto> getRequestsByUserIdAndEventId(@PathVariable("userId") Long userId,
-                                                          @PathVariable("eventId") Long eventId) {
-        return requestService.getRequestsByUserIdAndEventId(userId, eventId);
-    }
-
-    @PatchMapping("/users/{userId}/requests/{requestId}/cancel")
-    public RequestDto cancelRequest(@PathVariable("userId") Long userId,
-                                    @PathVariable(value = "requestId") Long requestId) {
-        return requestService.cancelRequest(userId, requestId);
-    }
-
-    @PatchMapping("/users/{userId}/events/{eventId}/requests")
-    public RequestUpdateDto updateRequestStatus(@PathVariable("userId") Long userId,
-                                                @PathVariable("eventId") Long eventId,
-                                                @RequestBody(required = false) NewRequestUpdateDto newRequestUpdateDto) {
-        return requestService.updateRequestStatus(userId, eventId, newRequestUpdateDto);
+    @PatchMapping("/{requestId}/cancel")
+    public ParticipationRequestDto cancelRequest(@PathVariable Long userId,
+                                                 @PathVariable Long requestId) {
+        log.info("Cancel Request with userId {} requestId {}", userId, requestId);
+        return service.cancelRequest(userId, requestId);
     }
 }

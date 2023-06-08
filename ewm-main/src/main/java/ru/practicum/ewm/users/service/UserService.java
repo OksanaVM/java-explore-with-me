@@ -1,14 +1,13 @@
 package ru.practicum.ewm.users.service;
 
 import ru.practicum.ewm.users.dto.NewUserDto;
-import ru.practicum.ewm.users.dto.UserDto;
 
 import java.util.List;
 
 public interface UserService {
-    UserDto create(NewUserDto newUserDto);
+    NewUserDto createUser(NewUserDto newUserDto);
 
-    List<UserDto> getUsers(List<Long> ids, Integer from, Integer size);
+    List<NewUserDto> getUsers(List<Long> ids, Integer from, Integer size);
 
-    void deleteUserById(Long userId);
+    void deleteUser(Long id);
 }

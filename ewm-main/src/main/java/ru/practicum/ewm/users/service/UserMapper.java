@@ -1,32 +1,30 @@
 package ru.practicum.ewm.users.service;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import ru.practicum.ewm.users.dto.NewUserDto;
-import ru.practicum.ewm.users.dto.UserDto;
 import ru.practicum.ewm.users.dto.UserShortDto;
 import ru.practicum.ewm.users.model.User;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserMapper {
-    private UserMapper() {
+
+    public static NewUserDto toUserDto(User user) {
+        return NewUserDto.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .build();
     }
 
     public static User toUser(NewUserDto newUserDto) {
-        User user = new User();
-
-        user.setName(newUserDto.getName());
-        user.setEmail(newUserDto.getEmail());
-
-        return user;
+        return User.builder()
+                .id(newUserDto.getId())
+                .name(newUserDto.getName())
+                .email(newUserDto.getEmail())
+                .build();
     }
 
-    public static UserDto toUserDto(User user) {
-        return new UserDto(
-                user.getId(),
-                user.getName(),
-                user.getEmail());
-    }
     public static UserShortDto toUserShortDto(User user) {
         return UserShortDto.builder()
                 .id(user.getId())
@@ -34,10 +32,4 @@ public class UserMapper {
                 .build();
     }
 
-    public static List<UserDto> toUserDto(List<User> users) {
-        return users
-                .stream()
-                .map(UserMapper::toUserDto)
-                .collect(Collectors.toList());
-    }
 }

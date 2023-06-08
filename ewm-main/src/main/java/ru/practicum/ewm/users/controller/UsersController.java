@@ -1,37 +1,45 @@
 package ru.practicum.ewm.users.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.users.dto.NewUserDto;
-import ru.practicum.ewm.users.dto.UserDto;
 import ru.practicum.ewm.users.service.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
 
+@Slf4j
+@Validated
 @RestController
+@RequestMapping(path = "/admin/users")
 @RequiredArgsConstructor
 public class UsersController {
     private final UserService userService;
 
-    @PostMapping("/admin/users")
+
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto create(@RequestBody @Valid NewUserDto newUserDto) {
-        return userService.create(newUserDto);
+    public NewUserDto createUser(@RequestBody @Valid NewUserDto newUserDto) {
+        log.info("Create user {}", newUserDto);
+        return userService.createUser(newUserDto);
     }
 
-    @GetMapping("/admin/users")
-    public List<UserDto> getUsers(
-            @RequestParam(value = "ids", required = false) List<Long> ids,
-            @RequestParam(value = "from", required = false, defaultValue = "0") Integer from,
-            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size) {
+    @GetMapping
+    public List<NewUserDto> getUsers(@RequestParam(required = false) List<Long> ids,
+                                     @RequestParam(required = false, defaultValue = "0") Integer from,
+                                     @RequestParam(required = false, defaultValue = "10") Integer size) {
+        log.info("Get users with ids {}, from {}, size {}", ids, from, size);
         return userService.getUsers(ids, from, size);
     }
 
-    @DeleteMapping("/admin/users/{userId}")
+    @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCategoryById(@PathVariable("userId") Long userId) {
-        userService.deleteUserById(userId);
+    public void deleteUser(@PathVariable Long id) {
+        log.info("Delete user {}", id);
+        userService.deleteUser(id);
     }
+
 }

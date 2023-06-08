@@ -3,7 +3,8 @@ package ru.practicum.ewm.events.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.events.dto.*;
+import ru.practicum.ewm.events.dto.EventFullDto;
+import ru.practicum.ewm.events.dto.UpdateEvent;
 import ru.practicum.ewm.events.service.EventService;
 
 import javax.validation.Valid;
@@ -29,9 +30,9 @@ public class AdminEventsController {
                                         @RequestParam(required = false) List<String> states,
                                         @RequestParam(required = false) List<Long> categories,
                                         @RequestParam(required = false) @DateTimeFormat(pattern = pattern)
-                                            LocalDateTime rangeStart,
+                                        LocalDateTime rangeStart,
                                         @RequestParam(required = false) @DateTimeFormat(pattern = pattern)
-                                            LocalDateTime rangeEnd,
+                                        LocalDateTime rangeEnd,
                                         @RequestParam(required = false, defaultValue = "0") Integer from,
                                         @RequestParam(required = false, defaultValue = "10") Integer size) {
         return eventService.getEvents(users, states, categories, rangeStart, rangeEnd, from, size);

@@ -73,6 +73,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                                                            @Param("rangeStart") LocalDateTime rangeStart,
                                                            @Param("rangeEnd") LocalDateTime rangeEnd,
                                                            Pageable pageable);
+
     @Query("select e from Event e " +
             "where ((:text is null or upper(e.annotation) like upper(concat('%', :text, '%'))) " +
             "or (:text is null or upper(e.description) like upper(concat('%', :text, '%')))) " +

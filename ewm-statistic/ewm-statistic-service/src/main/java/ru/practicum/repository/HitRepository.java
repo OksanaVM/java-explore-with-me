@@ -10,22 +10,22 @@ import java.util.List;
 
 public interface HitRepository extends JpaRepository<EndpointHit, Long> {
 
-    @Query(" select new ru.practicum.evm.model.ViewStat(app, uri, count(ip) as hits) from EndpointHit " +
-            "where timestamp between ?1 and ?2 and uri in(?3) " +
-            "group by app, uri order by hits desc")
-    List<ViewStats> getAllStatisticsWithUris(LocalDateTime start, LocalDateTime end, List<String> uri);
-
-    @Query(" select new ru.practicum.evm.model.ViewStat(app, uri, count(distinct ip) as hits) from EndpointHit " +
+    @Query(" select new ru.practicum.model.ViewStats (app, uri, count(distinct ip) as hits) from EndpointHit " +
             "where timestamp between ?1 and ?2 and uri in(?3) " +
             "group by app, uri order by hits desc")
     List<ViewStats> getStatisticsWithUniqueIpAndUris(LocalDateTime start, LocalDateTime end, List<String> uri);
 
-    @Query(" select new ru.practicum.evm.model.ViewStat(app, uri, count(distinct ip) as hits) from EndpointHit " +
+    @Query(" select new ru.practicum.model.ViewStats(app, uri, count(ip) as hits) from EndpointHit " +
+            "where timestamp between ?1 and ?2 and uri in(?3) " +
+            "group by app, uri order by hits desc")
+    List<ViewStats> getAllStatisticsWithUris(LocalDateTime start, LocalDateTime end, List<String> uri);
+
+    @Query(" select new ru.practicum.model.ViewStats(app, uri, count(distinct ip) as hits) from EndpointHit " +
             "where timestamp between ?1 and ?2 " +
             "group by app, uri order by hits desc")
     List<ViewStats> getStatisticsWithUniqueIp(LocalDateTime start, LocalDateTime end);
 
-    @Query(" select new ru.practicum.evm.model.ViewStat(app, uri, count(ip) as hits) from EndpointHit " +
+    @Query(" select new ru.practicum.model.ViewStats(app, uri, count(ip) as hits) from EndpointHit " +
             "where timestamp between ?1 and ?2 " +
             "group by app, uri order by hits desc")
     List<ViewStats> getAllStatistics(LocalDateTime start, LocalDateTime end);
