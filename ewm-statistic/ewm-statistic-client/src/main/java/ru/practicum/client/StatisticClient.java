@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-import ru.practicum.dto.EndpointHitDto;
+import ru.practicum.dto.HitDto;
 
 import java.util.List;
 import java.util.Map;
@@ -25,8 +25,8 @@ public class StatisticClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> addStatistic(EndpointHitDto endpointHitDto) {
-        return post("/hit", endpointHitDto);
+    public ResponseEntity<Object> addStatistic(HitDto hitDto) {
+        return post("/hit", hitDto);
     }
 
     public ResponseEntity<Object> getStatistic(String start, String end, List<String> uris, Boolean unique) {
