@@ -4,10 +4,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
-import ru.practicum.compilation.model.Compilation;
 import ru.practicum.event.dto.EventsShortDto;
-import ru.practicum.event.model.MapperEvent;
 import ru.practicum.event.model.Event;
+import ru.practicum.event.model.MapperEvent;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -11,10 +11,10 @@ import ru.practicum.compilation.model.Compilation;
 import ru.practicum.compilation.model.MapperCompilation;
 import ru.practicum.compilation.service.CompilationService;
 import ru.practicum.event.dto.EventsShortDto;
-import ru.practicum.exception.NotFoundException;
-import ru.practicum.event.model.MapperEvent;
 import ru.practicum.event.model.Event;
+import ru.practicum.event.model.MapperEvent;
 import ru.practicum.event.repository.EventsRepository;
+import ru.practicum.exception.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;

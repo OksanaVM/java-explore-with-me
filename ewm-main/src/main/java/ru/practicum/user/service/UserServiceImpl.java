@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.user.repository.UserRepository;
 import ru.practicum.user.dto.NewUserDto;
 import ru.practicum.user.model.MapperUser;
 import ru.practicum.user.model.User;
+import ru.practicum.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;

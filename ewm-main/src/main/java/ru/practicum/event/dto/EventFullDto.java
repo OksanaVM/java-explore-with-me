@@ -6,9 +6,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import ru.practicum.category.dto.NewCategoryDto;
-import ru.practicum.user.dto.UserShortDto;
 import ru.practicum.location.Location;
 import ru.practicum.model.State;
+import ru.practicum.user.dto.UserShortDto;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;

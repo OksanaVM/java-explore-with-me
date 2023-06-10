@@ -9,10 +9,10 @@ import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventsShortDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEvent;
+import ru.practicum.event.service.EventsService;
 import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.request.dto.EventRequestStatusUpdateResult;
 import ru.practicum.request.dto.ParticipationRequestDto;
-import ru.practicum.event.service.EventsService;
 
 import javax.validation.Valid;
 import java.util.List;

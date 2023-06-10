@@ -1,5 +1,6 @@
 package ru.practicum.client;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.dto.HitDto;
 import ru.practicum.dto.ViewStatDto;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.List;
 import java.util.Map;
@@ -41,7 +41,8 @@ public class StatisticClient extends BaseClient {
         );
         ResponseEntity<Object> response = get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);
         ObjectMapper objectMapper = new ObjectMapper();
-        List<ViewStatDto> viewStatDto = objectMapper.convertValue(response.getBody(), new TypeReference<>() {});
+        List<ViewStatDto> viewStatDto = objectMapper.convertValue(response.getBody(), new TypeReference<>() {
+        });
         return viewStatDto;
     }
 
