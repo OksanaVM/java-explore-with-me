@@ -8,7 +8,6 @@ services:
     depends_on:
       - stats-db
     environment:
-      - EWM_MAIN_URL=http://ewm-service:8080
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/statistic
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
