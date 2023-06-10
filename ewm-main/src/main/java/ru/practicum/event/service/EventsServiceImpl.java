@@ -93,8 +93,6 @@ public class EventsServiceImpl implements EventsService {
         PageRequest page = PageRequest.of(from, size);
         User user = checkUser(userId);
         List<Event> events = eventRepository.findDByInitiator(user, page);
-        Map<Long, Long> hits = getStatisticFromListEvents(events);
-        events.forEach(event -> event.setViews(hits.get(event.getId())));
         return events.stream()
                 .map(MapperEvent::toEventShortDto)
                 .collect(Collectors.toList());
@@ -106,8 +104,6 @@ public class EventsServiceImpl implements EventsService {
     public EventFullDto getEventWithOwner(Long userId, Long eventId) {
         checkUser(userId);
         Event event = findEventById(eventId);
-        Map<Long, Long> hits = getStatisticFromListEvents(List.of(event));
-        event.setViews(hits.get(event.getId()));
         return toEventFullDto(event);
     }
 
@@ -139,8 +135,6 @@ public class EventsServiceImpl implements EventsService {
         }
         Event updatedEvent = updateEventFields(event, dto);
         Event updatedEventFromDB = eventRepository.save(updatedEvent);
-        Map<Long, Long> hits = getStatisticFromListEvents(List.of(updatedEventFromDB));
-        event.setViews(hits.get(event.getId()));
         return toEventFullDto(updatedEventFromDB);
     }
 
@@ -166,8 +160,6 @@ public class EventsServiceImpl implements EventsService {
         }
         List<Event> events = eventRepository.getEventsWithUsersStatesCategoriesDateTime(
                 users, stateList, categories, start, end, page);
-        Map<Long, Long> hits = getStatisticFromListEvents(events);
-        events.forEach(event -> event.setViews(hits.get(event.getId())));
         return events.stream()
                 .map(MapperEvent::toEventFullDto)
                 .collect(Collectors.toList());
@@ -216,8 +208,6 @@ public class EventsServiceImpl implements EventsService {
         }
         Event updatedEvent = updateEventFields(event, dto);
         Event updatedEventFromDB = eventRepository.save(updatedEvent);
-        Map<Long, Long> hits = getStatisticFromListEvents(List.of(updatedEventFromDB));
-        updatedEventFromDB.setViews(hits.get(event.getId()));
         return toEventFullDto(updatedEventFromDB);
     }
 
@@ -247,8 +237,6 @@ public class EventsServiceImpl implements EventsService {
                     case VIEWS:
                         events = eventRepository.getAvailableEventsWithFilters(
                                 text, State.PUBLISHED, categories, paid, rangeStart, rangeEnd, page);
-                        Map<Long, Long> hits = getStatisticFromListEvents(events);
-                        events.forEach(event -> event.setViews(hits.get(event.getId())));
                         addStatistic(request);
                         return events.stream()
                                 .map(MapperEvent::toEventShortDto)
@@ -272,8 +260,6 @@ public class EventsServiceImpl implements EventsService {
                     case VIEWS:
                         events = eventRepository.getAllEventsWithFilters(
                                 text, State.PUBLISHED, categories, paid, rangeStart, rangeEnd, page);
-                        Map<Long, Long> hits = getStatisticFromListEvents(events);
-                        events.forEach(event -> event.setViews(hits.get(event.getId())));
                         addStatistic(request);
                         return events.stream()
                                 .map(MapperEvent::toEventShortDto)
@@ -297,11 +283,11 @@ public class EventsServiceImpl implements EventsService {
         if (!event.getState().equals(State.PUBLISHED)) {
             throw new NotFoundException("Событие еще не опубликовано");
         }
-        eventRepository.save(event);
         addStatistic(request);
+        EventFullDto eventFullDto = MapperEvent.toEventFullDto(event);
         Map<Long, Long> hits = getStatisticFromListEvents(List.of(event));
-        event.setViews(hits.get(event.getId()));
-        return toEventFullDto(event);
+        eventFullDto.setViews(hits.get(event.getId()));
+        return eventFullDto;
     }
 
     /**
@@ -397,10 +383,7 @@ public class EventsServiceImpl implements EventsService {
         String end = LocalDateTime.now().format(formatter);
         String eventsUri = "/events/";
         List<String> uris = idEvents.stream().map(id -> eventsUri + id).collect(Collectors.toList());
-        ResponseEntity<Object> response = statisticClient.getStatistic(start, end, uris, true);
-        ObjectMapper objectMapper = new ObjectMapper();
-        List<ViewStatDto> viewStatDto = objectMapper.convertValue(response.getBody(), new TypeReference<>() {
-        });
+        List<ViewStatDto> viewStatDto = statisticClient.getStatistic(start, end, uris, true);
         Map<Long, Long> hits = new HashMap<>();
         for (ViewStatDto statsDto : viewStatDto) {
             String uri = statsDto.getUri();
@@ -417,7 +400,7 @@ public class EventsServiceImpl implements EventsService {
             end = LocalDateTime.now();
         }
         if (start.isAfter(end)) {
-            throw new BadRequestException("Некорректный запрос. Дата окончания события задана позже даты стартаю");
+            throw new BadRequestException("Некорректный запрос. Дата окончания события задана позже даты старта");
         }
     }
 

@@ -34,7 +34,6 @@ public class MapperEvent {
                 .requestModeration(event.getRequestModeration())
                 .state(event.getState())
                 .title(event.getTitle())
-                .views(event.getViews())
                 .build();
     }
 
@@ -53,7 +52,6 @@ public class MapperEvent {
                 .requestModeration(newEventDto.getRequestModeration())
                 .state(State.PENDING)
                 .title(newEventDto.getTitle())
-                .views(0L)
                 .build();
     }
 
@@ -67,7 +65,6 @@ public class MapperEvent {
                 .initiator(toUserShortDto(event.getInitiator()))
                 .paid(event.getPaid())
                 .title(event.getTitle())
-                .views(event.getViews())
                 .build();
     }
 }

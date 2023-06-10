@@ -36,7 +36,6 @@ create table if not exists EVENTS (
     request_moderation  BOOLEAN,
     state               VARCHAR,
     title               VARCHAR,
-    views               BIGINT,
     constraint EVENTS_PK primary key (id),
     constraint EVENTS_Category_category_id_FK foreign key (category_id) references Category(id) ON DELETE CASCADE,
     constraint EVENTS_USERS_initiator_id_FK foreign key (initiator_id) references USERS(id) ON DELETE CASCADE,
