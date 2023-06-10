@@ -68,13 +68,10 @@ create table if not exists Requests (
       constraint Requests_USERS_requester_id_FK foreign key (requester_id) references USERS(id) ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX users_id_idx ON USERS (id);
-CREATE UNIQUE INDEX users_name_idx ON USERS(name);
 CREATE INDEX users_email_idx ON USERS(email);
 CREATE UNIQUE INDEX Location_id_idx ON Location (id);
 CREATE UNIQUE INDEX Category_id_idx ON Category (id);
 CREATE UNIQUE INDEX EVENTS_id_idx ON EVENTS (id);
 CREATE INDEX EVENTS_event_date_idx ON EVENTS (event_date);
 CREATE UNIQUE INDEX Compilation_id_idx ON Compilation (id);
-CREATE INDEX Compilation_title_idx ON Compilation (title);
 CREATE UNIQUE INDEX Requests_id_idx ON Requests (id);

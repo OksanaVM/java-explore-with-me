@@ -9,4 +9,9 @@ create table if not exists ENDPOINT_HIT (
     constraint ENDPOINT_HIT_PK primary key (id)
 );
 
-CREATE UNIQUE INDEX ENDPOINT_HIT_idx ON ENDPOINT_HIT (id);
+CREATE INDEX idx_app on endpoint_hit (app);
+CREATE INDEX idx_ip on endpoint_hit (ip);
+CREATE INDEX idx_uri on endpoint_hit (uri);
+CREATE INDEX idx_timestamp on endpoint_hit (created);
+CREATE INDEX idx_uri_timestamp on endpoint_hit (uri, created);
+CREATE INDEX idx_app_uri on endpoint_hit (app, uri);
