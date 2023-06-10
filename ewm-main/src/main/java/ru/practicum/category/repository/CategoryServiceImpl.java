@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.model.Category;
-import ru.practicum.category.model.MapperCategory;
+import ru.practicum.category.model.CategoryMapper;
 import ru.practicum.category.service.CategoryService;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventsRepository;
@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
-import static ru.practicum.category.model.MapperCategory.toCategory;
-import static ru.practicum.category.model.MapperCategory.toCategoryDto;
+import static ru.practicum.category.model.CategoryMapper.toCategory;
+import static ru.practicum.category.model.CategoryMapper.toCategoryDto;
 
 @Service
 @Transactional(readOnly = true)
@@ -41,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Transactional
     public void deleteCategory(Long id) {
-        Category category = checkCategory(id);
+        Category category = getCategoryModel(id);
         List<Event> events = eventsRepository.findByCategory(category);
         if (!events.isEmpty()) {
             throw new ConflictException("Нельзя удалить категорию. Существуют события, связанные с категорией.");
@@ -55,7 +55,7 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Transactional
     public NewCategoryDto updateCategory(Long id, NewCategoryDto newCategoryDto) {
-        Category category = checkCategory(id);
+        Category category = getCategoryModel(id);
         ofNullable(newCategoryDto.getName()).ifPresent(category::setName);
         return toCategoryDto(categoryRepository.save(category));
     }
@@ -66,7 +66,7 @@ public class CategoryServiceImpl implements CategoryService {
     public List<NewCategoryDto> getCategories(Integer from, Integer size) {
         PageRequest page = PageRequest.of(from, size);
         return categoryRepository.findAll(page).stream()
-                .map(MapperCategory::toCategoryDto)
+                .map(CategoryMapper::toCategoryDto)
                 .collect(Collectors.toList());
     }
 
@@ -74,12 +74,16 @@ public class CategoryServiceImpl implements CategoryService {
      * Получение информации о категории по ее идентификатору
      */
     public NewCategoryDto getCategory(Long id) {
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователь с таким id  не найден"));
+        Category category = getCategoryModel(id);
         return toCategoryDto(category);
     }
+//    public NewCategoryDto getCategory(Long id) {
+//        Category category = categoryRepository.findById(id)
+//                .orElseThrow(() -> new NotFoundException("Пользователь с таким id  не найден"));
+//        return toCategoryDto(category);
+//    }
 
-    private Category checkCategory(Long id) {
+    private Category getCategoryModel(Long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Категории с таким id не найдено"));
     }

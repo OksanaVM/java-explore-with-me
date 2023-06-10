@@ -14,7 +14,7 @@ import java.util.List;
 
 public interface EventsRepository extends JpaRepository<Event, Long> {
 
-    List<Event> findDByInitiator(User initiator, Pageable pageable);
+    List<Event> findByInitiator(User initiator, Pageable pageable);
 
     List<Event> findByCategory(Category category);
 

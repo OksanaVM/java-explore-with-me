@@ -11,7 +11,7 @@ import ru.practicum.user.model.User;
 
 import java.time.LocalDateTime;
 
-import static ru.practicum.category.model.MapperCategory.toCategoryDto;
+import static ru.practicum.category.model.CategoryMapper.toCategoryDto;
 import static ru.practicum.user.model.MapperUser.toUserShortDto;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

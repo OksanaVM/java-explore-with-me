@@ -5,8 +5,7 @@ import lombok.NoArgsConstructor;
 import ru.practicum.category.dto.NewCategoryDto;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class MapperCategory {
-
+public class CategoryMapper {
     public static NewCategoryDto toCategoryDto(Category category) {
         return NewCategoryDto.builder()
                 .id(category.getId())

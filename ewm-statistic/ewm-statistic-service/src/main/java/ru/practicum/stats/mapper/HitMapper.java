@@ -1,15 +1,15 @@
-package ru.practicum.stats.model;
+package ru.practicum.stats.mapper;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.practicum.dto.HitDto;
-import ru.practicum.dto.ViewStatDto;
+import ru.practicum.stats.model.Hit;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class MapperDto {
+public class HitMapper {
     public static final String pattern = "yyyy-MM-dd HH:mm:ss";
     public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
 
@@ -31,12 +31,5 @@ public class MapperDto {
                 .build();
     }
 
-    public static ViewStatDto toViewStatsDto(ViewStat viewStat) {
-        return ViewStatDto.builder()
-                .app(viewStat.getApp())
-                .uri(viewStat.getUri())
-                .hits(viewStat.getHits())
-                .build();
-    }
 
 }

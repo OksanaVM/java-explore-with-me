@@ -6,16 +6,16 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.HitDto;
 import ru.practicum.dto.ViewStatDto;
 import ru.practicum.stats.exception.StartEndRangeException;
+import ru.practicum.stats.mapper.ViewStatMapper;
 import ru.practicum.stats.model.Hit;
-import ru.practicum.stats.model.MapperDto;
 import ru.practicum.stats.repository.HitRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.stats.model.MapperDto.toEndpointHit;
-import static ru.practicum.stats.model.MapperDto.toEndpointHitDto;
+import static ru.practicum.stats.mapper.HitMapper.toEndpointHit;
+import static ru.practicum.stats.mapper.HitMapper.toEndpointHitDto;
 
 @Service
 @Transactional(readOnly = true)
@@ -35,21 +35,21 @@ public class HitServiceImpl implements HitService {
         if (uris == null) {
             if (unique) {
                 return repository.getStatisticsWithUniqueIp(start, end).stream()
-                        .map(MapperDto::toViewStatsDto)
+                        .map(ViewStatMapper::toViewStatsDto)
                         .collect(Collectors.toList());
             } else {
                 return repository.getAllStatistics(start, end).stream()
-                        .map(MapperDto::toViewStatsDto)
+                        .map(ViewStatMapper::toViewStatsDto)
                         .collect(Collectors.toList());
             }
         } else {
             if (unique) {
                 return repository.getStatisticsWithUniqueIpAndUris(start, end, uris).stream()
-                        .map(MapperDto::toViewStatsDto)
+                        .map(ViewStatMapper::toViewStatsDto)
                         .collect(Collectors.toList());
             } else {
                 return repository.getAllStatisticsWithUris(start, end, uris).stream()
-                        .map(MapperDto::toViewStatsDto)
+                        .map(ViewStatMapper::toViewStatsDto)
                         .collect(Collectors.toList());
             }
         }

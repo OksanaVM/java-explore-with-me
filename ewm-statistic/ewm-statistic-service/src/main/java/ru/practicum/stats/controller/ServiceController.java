@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.HitDto;
 import ru.practicum.dto.ViewStatDto;
-import ru.practicum.stats.model.MapperDto;
+import ru.practicum.stats.mapper.HitMapper;
 import ru.practicum.stats.service.HitService;
 
 import java.time.LocalDateTime;
@@ -28,8 +28,8 @@ public class ServiceController {
 
     @GetMapping("/stats")
     public List<ViewStatDto> getStatistic(
-            @RequestParam(name = "start", required = false) @DateTimeFormat(pattern = MapperDto.pattern) LocalDateTime start,
-            @RequestParam(name = "end", required = false) @DateTimeFormat(pattern = MapperDto.pattern) LocalDateTime end,
+            @RequestParam(name = "start", required = false) @DateTimeFormat(pattern = HitMapper.pattern) LocalDateTime start,
+            @RequestParam(name = "end", required = false) @DateTimeFormat(pattern = HitMapper.pattern) LocalDateTime end,
             @RequestParam(name = "uris", required = false) List<String> uris,
             @RequestParam(name = "unique", defaultValue = "false") Boolean unique) {
         log.info("Get statistic from start {}, end {}, uris {}, unique {}", start, end, uris, unique);

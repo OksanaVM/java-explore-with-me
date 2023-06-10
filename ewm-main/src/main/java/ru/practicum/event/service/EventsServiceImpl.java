@@ -89,7 +89,7 @@ public class EventsServiceImpl implements EventsService {
     public List<EventsShortDto> getEventsFromUser(Long userId, Integer from, Integer size) {
         PageRequest page = PageRequest.of(from, size);
         User user = checkUser(userId);
-        List<Event> events = eventRepository.findDByInitiator(user, page);
+        List<Event> events = eventRepository.findByInitiator(user, page);
         return events.stream()
                 .map(MapperEvent::toEventShortDto)
                 .collect(Collectors.toList());
@@ -99,7 +99,9 @@ public class EventsServiceImpl implements EventsService {
      * Получение полной информации о событии добавленном пользователем
      */
     public EventFullDto getEventWithOwner(Long userId, Long eventId) {
-        checkUser(userId);
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("Пользователь не найден");
+        }
         Event event = findEventById(eventId);
         return toEventFullDto(event);
     }
@@ -110,7 +112,9 @@ public class EventsServiceImpl implements EventsService {
     @Transactional
     public EventFullDto updateEvent(Long userId, Long eventId, UpdateEvent dto) {
         Event event = findEventById(eventId);
-        checkUser(userId);
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("Пользователь не найден");
+        }
         if (dto.getEventDate() != null) {
             checkDateTimeForDto(LocalDateTime.now(), dto.getEventDate());
         }
@@ -291,7 +295,9 @@ public class EventsServiceImpl implements EventsService {
      * Получение информации о запросах на участие в событии текущего пользователя
      */
     public List<ParticipationRequestDto> getRequestsForUserForThisEvent(Long userId, Long eventId) {
-        checkUser(userId);
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("Пользователь не найден");
+        }
         findEventById(eventId);
         List<Request> requests = requestRepository.findByEventId(eventId);
         return requests.stream()
@@ -306,7 +312,9 @@ public class EventsServiceImpl implements EventsService {
     public EventRequestStatusUpdateResult changeRequestsStatus(Long userId, Long eventId, EventRequestStatusUpdateRequest dto) {
         List<ParticipationRequestDto> confirmedRequests = new ArrayList<>();
         List<ParticipationRequestDto> rejectedRequests = new ArrayList<>();
-        checkUser(userId);
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("Пользователь не найден");
+        }
         Event event = findEventById(eventId);
         if (!event.getRequestModeration() || event.getParticipantLimit().equals(0L)) {
             throw new ConflictException("Подтверждение заявок не требуется");

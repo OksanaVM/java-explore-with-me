@@ -31,7 +31,7 @@ public class RequestServiceImpl implements RequestService {
     private final UserRepository userRepository;
 
     /**
-     * Добавление запроса от текущего пользоателя на участие в событии
+     * Добавление запроса от текущего пользователя на участие в событии
      */
     @Transactional
     public ParticipationRequestDto createRequest(Long userId, Long eventId) {
