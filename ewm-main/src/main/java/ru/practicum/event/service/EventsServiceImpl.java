@@ -115,6 +115,7 @@ public class EventsServiceImpl implements EventsService {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("Пользователь не найден");
         }
+
         if (dto.getEventDate() != null) {
             checkDateTimeForDto(LocalDateTime.now(), dto.getEventDate());
         }
