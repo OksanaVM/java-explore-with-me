@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.Length;
 import ru.practicum.location.Location;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 import static ru.practicum.utility.UtilityClass.pattern;
@@ -35,6 +36,6 @@ public class NewEventDto {
     private Long participantLimit;
     private Boolean requestModeration;
     @NotNull
-    @Length(min = 3, max = 120)
+    @Size(min = 3, max = 120)
     private String title;
 }

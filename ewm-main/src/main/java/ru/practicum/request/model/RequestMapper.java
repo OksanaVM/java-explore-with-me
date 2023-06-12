@@ -7,7 +7,7 @@ import ru.practicum.request.dto.ParticipationRequestDto;
 import static ru.practicum.utility.UtilityClass.formatter;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class MapperRequest {
+public class RequestMapper {
 
     public static ParticipationRequestDto toRequestDto(Request request) {
         return ParticipationRequestDto.builder()

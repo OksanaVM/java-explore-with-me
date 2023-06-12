@@ -12,10 +12,10 @@ import ru.practicum.user.model.User;
 import java.time.LocalDateTime;
 
 import static ru.practicum.category.model.CategoryMapper.toCategoryDto;
-import static ru.practicum.user.model.MapperUser.toUserShortDto;
+import static ru.practicum.user.model.UserMapper.toUserShortDto;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class MapperEvent {
+public class EventMapper {
 
     public static EventFullDto toEventFullDto(Event event) {
         return EventFullDto.builder()

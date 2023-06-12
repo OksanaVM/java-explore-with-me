@@ -15,7 +15,7 @@ import ru.practicum.event.dto.EventsShortDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEvent;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.model.MapperEvent;
+import ru.practicum.event.model.EventMapper;
 import ru.practicum.event.repository.EventsRepository;
 import ru.practicum.exception.BadRequestException;
 import ru.practicum.exception.ConflictException;
@@ -29,8 +29,8 @@ import ru.practicum.model.StateAction;
 import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.request.dto.EventRequestStatusUpdateResult;
 import ru.practicum.request.dto.ParticipationRequestDto;
-import ru.practicum.request.model.MapperRequest;
 import ru.practicum.request.model.Request;
+import ru.practicum.request.model.RequestMapper;
 import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
@@ -41,9 +41,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
-import static ru.practicum.event.model.MapperEvent.toEvent;
-import static ru.practicum.event.model.MapperEvent.toEventFullDto;
-import static ru.practicum.request.model.MapperRequest.toRequestDto;
+import static ru.practicum.event.model.EventMapper.toEvent;
+import static ru.practicum.event.model.EventMapper.toEventFullDto;
+import static ru.practicum.request.model.RequestMapper.toRequestDto;
 import static ru.practicum.utility.UtilityClass.formatter;
 
 @Service
@@ -76,8 +76,7 @@ public class EventsServiceImpl implements EventsService {
         checkDateTimeForDto(nowDateTime, dto.getEventDate());
         Category category = categoryRepository.findById(dto.getCategory())
                 .orElseThrow(() -> new NotFoundException("Категория с таким id  не найдена"));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь с таким id  не найден"));
+        User user = getUserModel(userId);
         locationRepository.save(dto.getLocation());
         Event event = toEvent(dto, category, user, nowDateTime);
         return toEventFullDto(eventRepository.save(event));
@@ -88,10 +87,10 @@ public class EventsServiceImpl implements EventsService {
      */
     public List<EventsShortDto> getEventsFromUser(Long userId, Integer from, Integer size) {
         PageRequest page = PageRequest.of(from, size);
-        User user = checkUser(userId);
+        User user = getUserModel(userId);
         List<Event> events = eventRepository.findByInitiator(user, page);
         return events.stream()
-                .map(MapperEvent::toEventShortDto)
+                .map(EventMapper::toEventShortDto)
                 .collect(Collectors.toList());
     }
 
@@ -99,9 +98,7 @@ public class EventsServiceImpl implements EventsService {
      * Получение полной информации о событии добавленном пользователем
      */
     public EventFullDto getEventWithOwner(Long userId, Long eventId) {
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("Пользователь не найден");
-        }
+        checkUser(userId);
         Event event = findEventById(eventId);
         return toEventFullDto(event);
     }
@@ -112,9 +109,7 @@ public class EventsServiceImpl implements EventsService {
     @Transactional
     public EventFullDto updateEvent(Long userId, Long eventId, UpdateEvent dto) {
         Event event = findEventById(eventId);
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("Пользователь не найден");
-        }
+        checkUser(userId);
         if (dto.getEventDate() != null) {
             checkDateTimeForDto(LocalDateTime.now(), dto.getEventDate());
         }
@@ -162,7 +157,7 @@ public class EventsServiceImpl implements EventsService {
         List<Event> events = eventRepository.getEventsWithUsersStatesCategoriesDateTime(
                 users, stateList, categories, start, end, page);
         return events.stream()
-                .map(MapperEvent::toEventFullDto)
+                .map(EventMapper::toEventFullDto)
                 .collect(Collectors.toList());
     }
 
@@ -233,14 +228,14 @@ public class EventsServiceImpl implements EventsService {
                                 text, State.PUBLISHED, categories, paid, rangeStart, rangeEnd, page);
                         addStatistic(request);
                         return events.stream()
-                                .map(MapperEvent::toEventShortDto)
+                                .map(EventMapper::toEventShortDto)
                                 .collect(Collectors.toList());
                     case VIEWS:
                         events = eventRepository.getAvailableEventsWithFilters(
                                 text, State.PUBLISHED, categories, paid, rangeStart, rangeEnd, page);
                         addStatistic(request);
                         return events.stream()
-                                .map(MapperEvent::toEventShortDto)
+                                .map(EventMapper::toEventShortDto)
                                 .sorted(Comparator.comparing(EventsShortDto::getViews))
                                 .collect(Collectors.toList());
                 }
@@ -256,14 +251,14 @@ public class EventsServiceImpl implements EventsService {
                                 text, State.PUBLISHED, categories, paid, rangeStart, rangeEnd, page);
                         addStatistic(request);
                         return events.stream()
-                                .map(MapperEvent::toEventShortDto)
+                                .map(EventMapper::toEventShortDto)
                                 .collect(Collectors.toList());
                     case VIEWS:
                         events = eventRepository.getAllEventsWithFilters(
                                 text, State.PUBLISHED, categories, paid, rangeStart, rangeEnd, page);
                         addStatistic(request);
                         return events.stream()
-                                .map(MapperEvent::toEventShortDto)
+                                .map(EventMapper::toEventShortDto)
                                 .sorted(Comparator.comparing(EventsShortDto::getViews))
                                 .collect(Collectors.toList());
                 }
@@ -271,7 +266,7 @@ public class EventsServiceImpl implements EventsService {
         }
         addStatistic(request);
         return events.stream()
-                .map(MapperEvent::toEventShortDto)
+                .map(EventMapper::toEventShortDto)
                 .collect(Collectors.toList());
     }
 
@@ -285,7 +280,7 @@ public class EventsServiceImpl implements EventsService {
             throw new NotFoundException("Событие еще не опубликовано");
         }
         addStatistic(request);
-        EventFullDto eventFullDto = MapperEvent.toEventFullDto(event);
+        EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
         Map<Long, Long> hits = getStatisticFromListEvents(List.of(event));
         eventFullDto.setViews(hits.get(event.getId()));
         return eventFullDto;
@@ -295,13 +290,11 @@ public class EventsServiceImpl implements EventsService {
      * Получение информации о запросах на участие в событии текущего пользователя
      */
     public List<ParticipationRequestDto> getRequestsForUserForThisEvent(Long userId, Long eventId) {
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("Пользователь не найден");
-        }
-        findEventById(eventId);
+        checkUser(userId);
+        checkEvent(eventId);
         List<Request> requests = requestRepository.findByEventId(eventId);
         return requests.stream()
-                .map(MapperRequest::toRequestDto)
+                .map(RequestMapper::toRequestDto)
                 .collect(Collectors.toList());
     }
 
@@ -312,9 +305,7 @@ public class EventsServiceImpl implements EventsService {
     public EventRequestStatusUpdateResult changeRequestsStatus(Long userId, Long eventId, EventRequestStatusUpdateRequest dto) {
         List<ParticipationRequestDto> confirmedRequests = new ArrayList<>();
         List<ParticipationRequestDto> rejectedRequests = new ArrayList<>();
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("Пользователь не найден");
-        }
+        checkUser(userId);
         Event event = findEventById(eventId);
         if (!event.getRequestModeration() || event.getParticipantLimit().equals(0L)) {
             throw new ConflictException("Подтверждение заявок не требуется");
@@ -437,7 +428,13 @@ public class EventsServiceImpl implements EventsService {
         }
     }
 
-    private User checkUser(Long idUser) {
+    private void checkUser(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("Пользователь не найден");
+        }
+    }
+
+    private User getUserModel(Long idUser) {
         return userRepository.findById(idUser)
                 .orElseThrow(() -> new NotFoundException("Пользователь с таким id  не найден"));
     }
@@ -447,4 +444,9 @@ public class EventsServiceImpl implements EventsService {
                 .orElseThrow(() -> new NotFoundException("Событие с таким id не найдено"));
     }
 
+    private void checkEvent(Long eventId) {
+        if (!eventRepository.existsById(eventId)) {
+            throw new NotFoundException("Событие не найдено");
+        }
+    }
 }

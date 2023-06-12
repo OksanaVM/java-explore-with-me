@@ -5,15 +5,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.user.dto.NewUserDto;
-import ru.practicum.user.model.MapperUser;
 import ru.practicum.user.model.User;
+import ru.practicum.user.model.UserMapper;
 import ru.practicum.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.user.model.MapperUser.toUser;
-import static ru.practicum.user.model.MapperUser.toUserDto;
+import static ru.practicum.user.model.UserMapper.toUser;
+import static ru.practicum.user.model.UserMapper.toUserDto;
 
 @Service
 @Transactional(readOnly = true)
@@ -37,11 +37,11 @@ public class UserServiceImpl implements UserService {
         PageRequest page = PageRequest.of(from, size);
         if (ids == null) {
             return repository.findAll(page).stream()
-                    .map(MapperUser::toUserDto)
+                    .map(UserMapper::toUserDto)
                     .collect(Collectors.toList());
         } else {
             return repository.findByIdIn(ids, page).stream()
-                    .map(MapperUser::toUserDto)
+                    .map(UserMapper::toUserDto)
                     .collect(Collectors.toList());
         }
     }

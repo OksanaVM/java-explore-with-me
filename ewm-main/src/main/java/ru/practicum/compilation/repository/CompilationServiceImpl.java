@@ -8,11 +8,11 @@ import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.compilation.model.Compilation;
-import ru.practicum.compilation.model.MapperCompilation;
+import ru.practicum.compilation.model.CompilationMapper;
 import ru.practicum.compilation.service.CompilationService;
 import ru.practicum.event.dto.EventsShortDto;
 import ru.practicum.event.model.Event;
-import ru.practicum.event.model.MapperEvent;
+import ru.practicum.event.model.EventMapper;
 import ru.practicum.event.repository.EventsRepository;
 import ru.practicum.exception.NotFoundException;
 
@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
-import static ru.practicum.compilation.model.MapperCompilation.toCompilation;
-import static ru.practicum.compilation.model.MapperCompilation.toCompilationDto;
+import static ru.practicum.compilation.model.CompilationMapper.toCompilation;
+import static ru.practicum.compilation.model.CompilationMapper.toCompilationDto;
 
 @Service
 @Transactional(readOnly = true)
@@ -45,7 +45,7 @@ public class CompilationServiceImpl implements CompilationService {
         if (dto.getEvents() != null) {
             eventList = eventsRepository.findAllById(dto.getEvents());
             eventsShortDtos = eventList.stream()
-                    .map(MapperEvent::toEventShortDto)
+                    .map(EventMapper::toEventShortDto)
                     .collect(Collectors.toList());
         }
         compilation = toCompilation(dto, eventList);
@@ -72,13 +72,13 @@ public class CompilationServiceImpl implements CompilationService {
         if (dto.getEvents() != null) {
             eventList = eventsRepository.findAllById(dto.getEvents());
             eventsShortDtos = eventList.stream()
-                    .map(MapperEvent::toEventShortDto)
+                    .map(EventMapper::toEventShortDto)
                     .collect(Collectors.toList());
             compilation.setEvents(eventList);
         } else {
             eventList = compilation.getEvents();
             eventsShortDtos = eventList.stream()
-                    .map(MapperEvent::toEventShortDto)
+                    .map(EventMapper::toEventShortDto)
                     .collect(Collectors.toList());
         }
         ofNullable(dto.getPinned()).ifPresent(compilation::setPinned);
@@ -101,7 +101,7 @@ public class CompilationServiceImpl implements CompilationService {
         PageRequest page = PageRequest.of(from, size);
         List<Compilation> compilations = compilationRepository.findByPinned(pinned, page);
         return compilations.stream()
-                .map(MapperCompilation::toCompilationDto)
+                .map(CompilationMapper::toCompilationDto)
                 .collect(Collectors.toList());
     }
 

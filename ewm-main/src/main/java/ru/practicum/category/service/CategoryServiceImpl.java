@@ -1,4 +1,4 @@
-package ru.practicum.category.repository;
+package ru.practicum.category.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.model.CategoryMapper;
-import ru.practicum.category.service.CategoryService;
+import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventsRepository;
 import ru.practicum.exception.ConflictException;
@@ -77,11 +77,6 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = getCategoryModel(id);
         return toCategoryDto(category);
     }
-//    public NewCategoryDto getCategory(Long id) {
-//        Category category = categoryRepository.findById(id)
-//                .orElseThrow(() -> new NotFoundException("Пользователь с таким id  не найден"));
-//        return toCategoryDto(category);
-//    }
 
     private Category getCategoryModel(Long id) {
         return categoryRepository.findById(id)

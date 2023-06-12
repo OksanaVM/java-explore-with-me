@@ -4,13 +4,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
 import ru.practicum.category.dto.NewCategoryDto;
 import ru.practicum.location.Location;
 import ru.practicum.model.State;
 import ru.practicum.user.dto.UserShortDto;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 import static ru.practicum.utility.UtilityClass.pattern;
@@ -39,8 +37,6 @@ public class EventFullDto {
     private LocalDateTime publishedOn;
     private Boolean requestModeration;
     private State state;
-    @NotNull
-    @Length(min = 3, max = 120)
     private String title;
     private Long views;
 }

@@ -10,8 +10,8 @@ import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.model.State;
 import ru.practicum.request.dto.ParticipationRequestDto;
-import ru.practicum.request.model.MapperRequest;
 import ru.practicum.request.model.Request;
+import ru.practicum.request.model.RequestMapper;
 import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.request.model.MapperRequest.toRequestDto;
+import static ru.practicum.request.model.RequestMapper.toRequestDto;
 
 @Service
 @Transactional(readOnly = true)
@@ -77,7 +77,7 @@ public class RequestServiceImpl implements RequestService {
         User user = checkUser(userId);
         List<Request> requests = requestRepository.findByRequester(user);
         return requests.stream()
-                .map(MapperRequest::toRequestDto)
+                .map(RequestMapper::toRequestDto)
                 .collect(Collectors.toList());
     }
 

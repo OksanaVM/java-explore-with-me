@@ -6,7 +6,7 @@ import ru.practicum.user.dto.NewUserDto;
 import ru.practicum.user.dto.UserShortDto;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class MapperUser {
+public class UserMapper {
     public static NewUserDto toUserDto(User user) {
         return NewUserDto.builder()
                 .id(user.getId())
