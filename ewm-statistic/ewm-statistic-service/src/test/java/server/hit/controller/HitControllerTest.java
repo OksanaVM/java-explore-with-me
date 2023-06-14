@@ -66,7 +66,7 @@ class HitControllerTest {
         Validator validator = validatorFactory.getValidator();
         Set<ConstraintViolation<HitDto>> violations = validator.validate(hitDto);
         assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("не должно быть пустым");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo("must not be blank");
     }
 
     @Test
@@ -81,7 +81,7 @@ class HitControllerTest {
         Validator validator = validatorFactory.getValidator();
         Set<ConstraintViolation<HitDto>> violations = validator.validate(hitDto);
         assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("не должно быть пустым");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo("must not be blank");
     }
 
     @Test
@@ -96,7 +96,7 @@ class HitControllerTest {
         Validator validator = validatorFactory.getValidator();
         Set<ConstraintViolation<HitDto>> violations = validator.validate(hitDto);
         assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("не должно быть пустым");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo("must not be blank");
     }
 
 }
