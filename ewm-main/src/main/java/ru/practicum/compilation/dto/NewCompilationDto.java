@@ -6,13 +6,13 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
 @Builder
 public class NewCompilationDto {
-    private List<Long> events;
+    private Set<Long> events;
     private Boolean pinned;
     @NotBlank
     @Size(max = 50)

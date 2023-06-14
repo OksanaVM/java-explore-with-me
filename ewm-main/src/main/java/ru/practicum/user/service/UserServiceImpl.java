@@ -1,9 +1,12 @@
 package ru.practicum.user.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.exception.BadRequestException;
+import ru.practicum.exception.ConflictException;
 import ru.practicum.user.dto.NewUserDto;
 import ru.practicum.user.model.User;
 import ru.practicum.user.model.UserMapper;
@@ -27,7 +30,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public NewUserDto createUser(NewUserDto newUserDto) {
         User user = toUser(newUserDto);
-        return toUserDto(repository.save(user));
+        try {
+            return toUserDto(repository.save(user));
+        } catch (DataIntegrityViolationException e) {
+            throw new ConflictException("Почта " + newUserDto.getEmail() + " или имя пользователя " +
+                    newUserDto.getName() + " уже используется");
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Запрос на добавление пользователя" + newUserDto + " составлен не корректно ");
+        }
     }
 
     /**

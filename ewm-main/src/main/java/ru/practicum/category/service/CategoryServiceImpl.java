@@ -1,6 +1,8 @@
 package ru.practicum.category.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,7 +12,9 @@ import ru.practicum.category.model.CategoryMapper;
 import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventsRepository;
+import ru.practicum.exception.BadRequestException;
 import ru.practicum.exception.ConflictException;
+import ru.practicum.exception.IncorrectStateException;
 import ru.practicum.exception.NotFoundException;
 
 import java.util.List;
@@ -23,6 +27,7 @@ import static ru.practicum.category.model.CategoryMapper.toCategoryDto;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final EventsRepository eventsRepository;
@@ -32,9 +37,13 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Transactional
     public NewCategoryDto createCategory(NewCategoryDto newCategoryDto) {
-        Category category = toCategory(newCategoryDto);
-        return toCategoryDto(categoryRepository.save(category));
+        if (newCategoryDto != null) {
+            Category category = toCategory(newCategoryDto);
+            return getCategoryDto(category, category.getName());
+        }
+        return null;
     }
+
 
     /**
      * Удаление категории
@@ -57,7 +66,17 @@ public class CategoryServiceImpl implements CategoryService {
     public NewCategoryDto updateCategory(Long id, NewCategoryDto newCategoryDto) {
         Category category = getCategoryModel(id);
         ofNullable(newCategoryDto.getName()).ifPresent(category::setName);
-        return toCategoryDto(categoryRepository.save(category));
+        try {
+            return CategoryMapper.toCategoryDto(categoryRepository.save(category));
+        } catch (DataIntegrityViolationException e) {
+            log.warn("Нарушена уникальность имени категории {} уже используется", newCategoryDto.getName());
+            throw new IncorrectStateException("Имя категории должно быть уникальным, "
+                    + newCategoryDto.getName() + " уже используется");
+        } catch (Exception e) {
+            log.warn("Запрос на добавлении категории {} составлен не корректно", newCategoryDto.getName());
+            throw new BadRequestException("Запрос на добавлении категории " + newCategoryDto.getName() + " составлен не корректно ");
+        }
+
     }
 
     /**
@@ -81,6 +100,19 @@ public class CategoryServiceImpl implements CategoryService {
     private Category getCategoryModel(Long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Категории с таким id не найдено"));
+    }
+
+    private NewCategoryDto getCategoryDto(Category category, String name) {
+        try {
+            return CategoryMapper.toCategoryDto(categoryRepository.save(category));
+        } catch (DataIntegrityViolationException e) {
+            log.warn("Нарушена уникальность имени категории {} уже используется", name);
+            throw new IncorrectStateException("Имя категории должно быть уникальным, "
+                    + name + " уже используется");
+        } catch (Exception e) {
+            log.warn("Запрос на добавлении категории {} составлен не корректно", name);
+            throw new BadRequestException("Запрос на добавлении категории " + name + " составлен не корректно ");
+        }
     }
 
 }

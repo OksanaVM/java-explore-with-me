@@ -1,4 +1,4 @@
-package ru.practicum.compilation.repository;
+package ru.practicum.compilation.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -9,15 +9,14 @@ import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.compilation.model.CompilationMapper;
-import ru.practicum.compilation.service.CompilationService;
+import ru.practicum.compilation.repository.CompilationRepository;
 import ru.practicum.event.dto.EventsShortDto;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventMapper;
 import ru.practicum.event.repository.EventsRepository;
 import ru.practicum.exception.NotFoundException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.ofNullable;
@@ -40,14 +39,13 @@ public class CompilationServiceImpl implements CompilationService {
             dto.setPinned(false);
         }
         Compilation compilation;
-        List<Event> eventList = new ArrayList<>();
-        List<EventsShortDto> eventsShortDtos = new ArrayList<>();
-        if (dto.getEvents() != null) {
-            eventList = eventsRepository.findAllById(dto.getEvents());
-            eventsShortDtos = eventList.stream()
-                    .map(EventMapper::toEventShortDto)
-                    .collect(Collectors.toList());
-        }
+        Set<Event> eventList = new HashSet<>();
+        List<EventsShortDto> eventsShortDtos = Optional.ofNullable(dto.getEvents())
+                .map(eventsRepository::findAllById)
+                .stream()
+                .flatMap(Collection::stream)
+                .map(EventMapper::toEventShortDto)
+                .collect(Collectors.toList());
         compilation = toCompilation(dto, eventList);
         Compilation newCompilation = compilationRepository.save(compilation);
         return toCompilationDto(newCompilation, eventsShortDtos);
@@ -66,11 +64,11 @@ public class CompilationServiceImpl implements CompilationService {
      */
     @Transactional
     public CompilationDto updateCompilations(Long compId, UpdateCompilationRequest dto) {
-        List<Event> eventList;
-        List<EventsShortDto> eventsShortDtos;
         Compilation compilation = findCompilationById(compId);
+        Set<Event> eventList;
+        List<EventsShortDto> eventsShortDtos;
         if (dto.getEvents() != null) {
-            eventList = eventsRepository.findAllById(dto.getEvents());
+            eventList = new HashSet<>(eventsRepository.findAllById(dto.getEvents()));
             eventsShortDtos = eventList.stream()
                     .map(EventMapper::toEventShortDto)
                     .collect(Collectors.toList());

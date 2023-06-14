@@ -44,6 +44,9 @@ public class RequestServiceImpl implements RequestService {
         if (event.getInitiator().getId().equals(userId)) {
             throw new ConflictException("Инициатор события не может добавить запрос на участие в своём событии.");
         }
+//        if (requestRepository.findActiveRequestByUserIdAndEventId(userId, eventId).isPresent()) {
+//            throw new ConflictException("Вы уже подали заявку на участие в данном событии.");
+//        }
         if (event.getState().equals(State.PENDING) || event.getState().equals(State.CANCELED)) {
             throw new ConflictException("Нельзя участвовать в неопубликованном событии.");
         }

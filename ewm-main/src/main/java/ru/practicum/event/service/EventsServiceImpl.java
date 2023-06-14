@@ -79,6 +79,9 @@ public class EventsServiceImpl implements EventsService {
         User user = getUserModel(userId);
         locationRepository.save(dto.getLocation());
         Event event = toEvent(dto, category, user, nowDateTime);
+        EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
+        Map<Long, Long> hits = getStatisticFromListEvents(List.of(event));
+        eventFullDto.setViews(hits.getOrDefault(event.getId(), 0L));
         return toEventFullDto(eventRepository.save(event));
     }
 
@@ -89,8 +92,10 @@ public class EventsServiceImpl implements EventsService {
         PageRequest page = PageRequest.of(from, size);
         User user = getUserModel(userId);
         List<Event> events = eventRepository.findByInitiator(user, page);
+        Map<Long, Long> hits = getStatisticFromListEvents(events);
         return events.stream()
                 .map(EventMapper::toEventShortDto)
+                .peek(e -> e.setViews(hits.getOrDefault(e.getId(), 0L)))
                 .collect(Collectors.toList());
     }
 
@@ -100,6 +105,9 @@ public class EventsServiceImpl implements EventsService {
     public EventFullDto getEventWithOwner(Long userId, Long eventId) {
         checkUser(userId);
         Event event = findEventById(eventId);
+        EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
+        Map<Long, Long> hits = getStatisticFromListEvents(List.of(event));
+        eventFullDto.setViews(hits.getOrDefault(event.getId(), 0L));
         return toEventFullDto(event);
     }
 
@@ -131,6 +139,9 @@ public class EventsServiceImpl implements EventsService {
         }
         Event updatedEvent = updateEventFields(event, dto);
         Event updatedEventFromDB = eventRepository.save(updatedEvent);
+        EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
+        Map<Long, Long> hits = getStatisticFromListEvents(List.of(event));
+        eventFullDto.setViews(hits.getOrDefault(event.getId(), 0L));
         return toEventFullDto(updatedEventFromDB);
     }
 
@@ -210,7 +221,6 @@ public class EventsServiceImpl implements EventsService {
     /**
      * Получение событий с возможностью фильтрации (публичный доступ)
      */
-    @Transactional
     public List<EventsShortDto> getEventsWithFilters(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
                                                      LocalDateTime rangeEnd, Boolean onlyAvailable, String sort, Integer from,
                                                      Integer size, HttpServletRequest request) {
@@ -256,7 +266,6 @@ public class EventsServiceImpl implements EventsService {
                     case VIEWS:
                         events = eventRepository.getAllEventsWithFilters(
                                 text, State.PUBLISHED, categories, paid, rangeStart, rangeEnd, page);
-                        addStatistic(request);
                         return events.stream()
                                 .map(EventMapper::toEventShortDto)
                                 .sorted(Comparator.comparing(EventsShortDto::getViews))
@@ -265,15 +274,16 @@ public class EventsServiceImpl implements EventsService {
             }
         }
         addStatistic(request);
+        Map<Long, Long> hits = getStatisticFromListEvents(events);
         return events.stream()
                 .map(EventMapper::toEventShortDto)
+                .peek(e -> e.setViews(hits.get(e.getId())))
                 .collect(Collectors.toList());
     }
 
     /**
      * Получение полной информации об опубликованном событии по его идентификатору
      */
-    @Transactional
     public EventFullDto getEventWithFullInfoById(Long id, HttpServletRequest request) {
         Event event = findEventById(id);
         if (!event.getState().equals(State.PUBLISHED)) {
@@ -320,7 +330,6 @@ public class EventsServiceImpl implements EventsService {
                         .orElseThrow(() -> new NotFoundException("Запроса c id = " + requestId + " не найдено."));
                 if (request.getStatus().equals(State.PENDING)) {
                     request.setStatus(State.REJECTED);
-                    requestRepository.save(request);
                     rejectedRequests.add(toRequestDto(request));
                 }
             }
@@ -334,7 +343,6 @@ public class EventsServiceImpl implements EventsService {
                     request.setStatus(State.CONFIRMED);
                     event.setConfirmedRequests(event.getConfirmedRequests() + 1);
                     eventRepository.save(event);
-                    requestRepository.save(request);
                     confirmedRequests.add(toRequestDto(request));
                     limitBalance--;
                 }
@@ -344,7 +352,6 @@ public class EventsServiceImpl implements EventsService {
                         .orElseThrow(() -> new NotFoundException("Запроса c id = " + finalI + " не найдено."));
                 if (request.getStatus().equals(State.PENDING)) {
                     request.setStatus(State.REJECTED);
-                    requestRepository.save(request);
                     rejectedRequests.add(toRequestDto(request));
                 }
             }

@@ -9,6 +9,7 @@ import ru.practicum.event.model.Event;
 import ru.practicum.event.model.EventMapper;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -34,9 +35,9 @@ public class CompilationMapper {
                 .build();
     }
 
-    public static Compilation toCompilation(NewCompilationDto dto, List<Event> eventList) {
+    public static Compilation toCompilation(NewCompilationDto dto, Set<Event> eventSet) {
         return Compilation.builder()
-                .events(eventList)
+                .events(eventSet)
                 .pinned(dto.getPinned())
                 .title(dto.getTitle())
                 .build();
