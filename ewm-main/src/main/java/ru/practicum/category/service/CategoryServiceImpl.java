@@ -39,7 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
     public NewCategoryDto createCategory(NewCategoryDto newCategoryDto) {
         if (newCategoryDto != null) {
             Category category = toCategory(newCategoryDto);
-            return getCategoryDto(category, category.getName());
+            return saveCategory(category);
         }
         return null;
     }
@@ -102,16 +102,13 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new NotFoundException("Категории с таким id не найдено"));
     }
 
-    private NewCategoryDto getCategoryDto(Category category, String name) {
+    private NewCategoryDto saveCategory(Category category) {
         try {
             return CategoryMapper.toCategoryDto(categoryRepository.save(category));
         } catch (DataIntegrityViolationException e) {
-            log.warn("Нарушена уникальность имени категории {} уже используется", name);
+            log.warn("Нарушена уникальность имени категории {} уже используется", category.getName());
             throw new IncorrectStateException("Имя категории должно быть уникальным, "
-                    + name + " уже используется");
-        } catch (Exception e) {
-            log.warn("Запрос на добавлении категории {} составлен не корректно", name);
-            throw new BadRequestException("Запрос на добавлении категории " + name + " составлен не корректно ");
+                    + category.getName() + " уже используется");
         }
     }
 

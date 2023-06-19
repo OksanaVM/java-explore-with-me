@@ -36,18 +36,5 @@ class HitMapperTest {
         assertThat(hit.getIp().equals(hitDto.getIp())).isTrue();
         assertThat(hit.getTimestamp().equals(LocalDateTime.of(2022, 9, 06, 11, 00, 00))).isTrue();
     }
-//
-//    @Test
-//    @DisplayName("Тест преобразования hitDto -> hit, невалидная дата")
-//    void toHitNotValidDateTest() {
-//        hitDto = HitDto.builder()
-//                .app("ewm-main-service")
-//                .uri("/events/1")
-//                .ip("192.163.0.1")
-//                .timestamp("rrtt-09-@@ 11:00:aa")
-//                .build();
-//        assertThrows(StartEndRangeException.class,
-//                () -> HitMapper.toEndpointHit(hitDto));
-//
-//    }
+
 }

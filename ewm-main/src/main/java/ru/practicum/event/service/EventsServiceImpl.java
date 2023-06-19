@@ -79,11 +79,9 @@ public class EventsServiceImpl implements EventsService {
         User user = getUserModel(userId);
         locationRepository.save(dto.getLocation());
         Event event = toEvent(dto, category, user, nowDateTime);
-        EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
-        Map<Long, Long> hits = getStatisticFromListEvents(List.of(event));
-        eventFullDto.setViews(hits.getOrDefault(event.getId(), 0L));
-        return toEventFullDto(eventRepository.save(event));
+        return toEventFullDto(eventRepository.save(event), 0L);
     }
+
 
     /**
      * Получение событий добавленных пользователем
@@ -105,10 +103,10 @@ public class EventsServiceImpl implements EventsService {
     public EventFullDto getEventWithOwner(Long userId, Long eventId) {
         checkUser(userId);
         Event event = findEventById(eventId);
-        EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
+        EventFullDto eventFullDto = EventMapper.toEventFullDto(event, 0L);
         Map<Long, Long> hits = getStatisticFromListEvents(List.of(event));
         eventFullDto.setViews(hits.getOrDefault(event.getId(), 0L));
-        return toEventFullDto(event);
+        return eventFullDto;
     }
 
     /**
@@ -137,12 +135,7 @@ public class EventsServiceImpl implements EventsService {
                     throw new IncorrectStateException("Некорректный статус dto.");
             }
         }
-        Event updatedEvent = updateEventFields(event, dto);
-        Event updatedEventFromDB = eventRepository.save(updatedEvent);
-        EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
-        Map<Long, Long> hits = getStatisticFromListEvents(List.of(event));
-        eventFullDto.setViews(hits.getOrDefault(event.getId(), 0L));
-        return toEventFullDto(updatedEventFromDB);
+        return getEventFullDto(dto, event);
     }
 
     /**
@@ -167,8 +160,9 @@ public class EventsServiceImpl implements EventsService {
         }
         List<Event> events = eventRepository.getEventsWithUsersStatesCategoriesDateTime(
                 users, stateList, categories, start, end, page);
+        Map<Long, Long> hits = getStatisticFromListEvents(events);
         return events.stream()
-                .map(EventMapper::toEventFullDto)
+                .map(e -> toEventFullDto(e, hits.getOrDefault(e.getId(), 0L)))
                 .collect(Collectors.toList());
     }
 
@@ -213,9 +207,7 @@ public class EventsServiceImpl implements EventsService {
                     throw new IncorrectStateException("Некорректный статус dto.");
             }
         }
-        Event updatedEvent = updateEventFields(event, dto);
-        Event updatedEventFromDB = eventRepository.save(updatedEvent);
-        return toEventFullDto(updatedEventFromDB);
+        return getEventFullDto(dto, event);
     }
 
     /**
@@ -237,16 +229,20 @@ public class EventsServiceImpl implements EventsService {
                         events = eventRepository.getAvailableEventsWithFiltersDateSorted(
                                 text, State.PUBLISHED, categories, paid, rangeStart, rangeEnd, page);
                         addStatistic(request);
+                        Map<Long, Long> hits = getStatisticFromListEvents(events);
                         return events.stream()
                                 .map(EventMapper::toEventShortDto)
+                                .peek(e -> e.setViews(hits.get(e.getId())))
                                 .collect(Collectors.toList());
                     case VIEWS:
                         events = eventRepository.getAvailableEventsWithFilters(
                                 text, State.PUBLISHED, categories, paid, rangeStart, rangeEnd, page);
                         addStatistic(request);
+                        Map<Long, Long> hits3 = getStatisticFromListEvents(events);
                         return events.stream()
                                 .map(EventMapper::toEventShortDto)
                                 .sorted(Comparator.comparing(EventsShortDto::getViews))
+                                .peek(e -> e.setViews(hits3.get(e.getId())))
                                 .collect(Collectors.toList());
                 }
             }
@@ -266,9 +262,12 @@ public class EventsServiceImpl implements EventsService {
                     case VIEWS:
                         events = eventRepository.getAllEventsWithFilters(
                                 text, State.PUBLISHED, categories, paid, rangeStart, rangeEnd, page);
+                        addStatistic(request);
+                        Map<Long, Long> hits = getStatisticFromListEvents(events);
                         return events.stream()
                                 .map(EventMapper::toEventShortDto)
                                 .sorted(Comparator.comparing(EventsShortDto::getViews))
+                                .peek(e -> e.setViews(hits.get(e.getId())))
                                 .collect(Collectors.toList());
                 }
             }
@@ -290,7 +289,7 @@ public class EventsServiceImpl implements EventsService {
             throw new NotFoundException("Событие еще не опубликовано");
         }
         addStatistic(request);
-        EventFullDto eventFullDto = EventMapper.toEventFullDto(event);
+        EventFullDto eventFullDto = EventMapper.toEventFullDto(event, 0L);
         Map<Long, Long> hits = getStatisticFromListEvents(List.of(event));
         eventFullDto.setViews(hits.get(event.getId()));
         return eventFullDto;
@@ -373,6 +372,15 @@ public class EventsServiceImpl implements EventsService {
                 .ip(request.getRemoteAddr())
                 .timestamp(LocalDateTime.now().format(formatter))
                 .build());
+    }
+
+    private EventFullDto getEventFullDto(UpdateEvent dto, Event event) {
+        Event updatedEvent = updateEventFields(event, dto);
+        Event updatedEventFromDB = eventRepository.save(updatedEvent);
+        EventFullDto eventFullDto = EventMapper.toEventFullDto(event, 0L);
+        Map<Long, Long> hits = getStatisticFromListEvents(List.of(updatedEventFromDB));
+        eventFullDto.setViews(hits.getOrDefault(event.getId(), 0L));
+        return eventFullDto;
     }
 
     /**

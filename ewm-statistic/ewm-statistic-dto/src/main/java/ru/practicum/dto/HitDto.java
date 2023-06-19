@@ -14,13 +14,13 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class HitDto {
     @NotBlank
-    @Size(max = 255)
+    @Size(max = 256)
     private String app;
     @NotBlank
-    @Size(max = 255)
+    @Size(max = 512)
     private String uri;
     @NotBlank
-    @Size(max = 255)
+    @Size(max = 64)
     private String ip;
     private String timestamp;
 }
