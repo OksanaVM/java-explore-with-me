@@ -1,6 +1,6 @@
 # java-explore-with-me
 
-[Pull request link]
+[Pull request link] https://github.com/OksanaVM/java-explore-with-me/pull/9
 ## Проект "Explore With Me"
 
 Приложение позволяет пользователям делиться информацией об интересных событиях и находить компанию для участия в них.

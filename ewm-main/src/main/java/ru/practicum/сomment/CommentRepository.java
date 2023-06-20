@@ -1,4 +1,4 @@
-package ru.practicum.comment;
+package ru.practicum.сomment;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

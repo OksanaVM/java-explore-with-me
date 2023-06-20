@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.comment.CommentService;
-import ru.practicum.comment.dto.CommentDto;
-import ru.practicum.comment.dto.NewCommentDto;
+import ru.practicum.сomment.CommentService;
+import ru.practicum.сomment.dto.CommentDto;
+import ru.practicum.сomment.dto.NewCommentDto;
 
 import javax.validation.Valid;
 
