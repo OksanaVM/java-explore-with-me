@@ -1,4 +1,4 @@
-package ru.practicum.сomment;
+package ru.practicum.сomment.dto;
 
 import lombok.Builder;
 import lombok.Getter;

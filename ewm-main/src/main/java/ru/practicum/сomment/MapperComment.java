@@ -4,6 +4,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.practicum.event.model.Event;
 import ru.practicum.user.model.User;
+import ru.practicum.сomment.dto.CommentDto;
+import ru.practicum.сomment.dto.NewCommentDto;
 
 import java.time.LocalDateTime;
 import java.util.List;

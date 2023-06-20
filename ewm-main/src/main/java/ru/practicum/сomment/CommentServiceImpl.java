@@ -11,6 +11,8 @@ import ru.practicum.exception.NotFoundException;
 import ru.practicum.model.State;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
+import ru.practicum.сomment.dto.CommentDto;
+import ru.practicum.сomment.dto.NewCommentDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
