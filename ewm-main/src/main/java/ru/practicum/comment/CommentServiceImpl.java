@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.comment.model.EventComment;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventsRepository;
 import ru.practicum.exception.ConflictException;

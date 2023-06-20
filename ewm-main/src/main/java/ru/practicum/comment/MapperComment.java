@@ -2,6 +2,7 @@ package ru.practicum.comment;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import ru.practicum.comment.model.EventComment;
 import ru.practicum.event.model.Event;
 import ru.practicum.user.model.User;
 import ru.practicum.comment.dto.CommentDto;
