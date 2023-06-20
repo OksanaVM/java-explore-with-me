@@ -1,4 +1,4 @@
-package ru.practicum.сomment;
+package ru.practicum.comment;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -11,14 +11,14 @@ import ru.practicum.exception.NotFoundException;
 import ru.practicum.model.State;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
-import ru.practicum.сomment.dto.CommentDto;
-import ru.practicum.сomment.dto.NewCommentDto;
+import ru.practicum.comment.dto.CommentDto;
+import ru.practicum.comment.dto.NewCommentDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.сomment.MapperComment.toComment;
-import static ru.practicum.сomment.MapperComment.toCommentDto;
+import static ru.practicum.comment.MapperComment.toComment;
+import static ru.practicum.comment.MapperComment.toCommentDto;
 
 
 @Service

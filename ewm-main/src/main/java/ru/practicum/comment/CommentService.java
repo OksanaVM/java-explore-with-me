@@ -1,7 +1,7 @@
-package ru.practicum.сomment;
+package ru.practicum.comment;
 
-import ru.practicum.сomment.dto.CommentDto;
-import ru.practicum.сomment.dto.NewCommentDto;
+import ru.practicum.comment.dto.CommentDto;
+import ru.practicum.comment.dto.NewCommentDto;
 
 import java.util.List;
 
