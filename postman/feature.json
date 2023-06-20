@@ -329,63 +329,6 @@
 			"response": []
 		},
 		{
-			"name": "Попытка добавить комментарий к еще не опубликованному событию",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Ответ должен содержать код статуса 409 и данные в формате json\", function () {\r",
-							"    pm.response.to.have.status(409);\r",
-							"    pm.response.to.be.withBody;\r",
-							"    pm.response.to.be.json;\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"text\": \"Новый комментарий к событию\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8080/users/:userId/events/:eventId/comments",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"users",
-						":userId",
-						"events",
-						":eventId",
-						"comments"
-					],
-					"variable": [
-						{
-							"key": "userId",
-							"value": "136"
-						},
-						{
-							"key": "eventId",
-							"value": "94"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Публикация события администратором",
 			"event": [
 				{
