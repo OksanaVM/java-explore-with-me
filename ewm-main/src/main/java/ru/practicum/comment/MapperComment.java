@@ -1,11 +1,11 @@
-package ru.practicum.сomment;
+package ru.practicum.comment;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.practicum.event.model.Event;
 import ru.practicum.user.model.User;
-import ru.practicum.сomment.dto.CommentDto;
-import ru.practicum.сomment.dto.NewCommentDto;
+import ru.practicum.comment.dto.CommentDto;
+import ru.practicum.comment.dto.NewCommentDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
