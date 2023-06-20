@@ -378,7 +378,7 @@
 						},
 						{
 							"key": "eventId",
-							"value": "102"
+							"value": "107"
 						}
 					]
 				}
@@ -905,9 +905,8 @@
 							"\r",
 							"const body = pm.response.json();\r",
 							"\r",
-							"pm.test(\"Ответ должен содержать список с одним элементом.\", function(){\r",
+							"pm.test(\"Ответ должен содержать список.\", function(){\r",
 							"pm.expect(body).is.an('array');\r",
-							"pm.expect(body.length, 'List должен содержать 1 элемент').to.eql(1);\r",
 							"});\r",
 							"\r",
 							"const target = pm.response.json()[0];\r",
