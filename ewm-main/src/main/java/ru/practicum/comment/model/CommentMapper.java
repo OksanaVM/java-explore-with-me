@@ -1,19 +1,18 @@
-package ru.practicum.comment;
+package ru.practicum.comment.model;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import ru.practicum.comment.model.EventComment;
-import ru.practicum.event.model.Event;
-import ru.practicum.user.model.User;
 import ru.practicum.comment.dto.CommentDto;
 import ru.practicum.comment.dto.NewCommentDto;
+import ru.practicum.event.model.Event;
+import ru.practicum.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class MapperComment {
+public class CommentMapper {
 
     public static CommentDto toCommentDto(EventComment eventComment) {
         return CommentDto.builder()

@@ -1,10 +1,14 @@
-package ru.practicum.comment;
+package ru.practicum.comment.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.comment.dto.CommentDto;
+import ru.practicum.comment.dto.NewCommentDto;
+import ru.practicum.comment.model.CommentMapper;
 import ru.practicum.comment.model.EventComment;
+import ru.practicum.comment.repository.CommentRepository;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventsRepository;
 import ru.practicum.exception.ConflictException;
@@ -12,14 +16,12 @@ import ru.practicum.exception.NotFoundException;
 import ru.practicum.model.State;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
-import ru.practicum.comment.dto.CommentDto;
-import ru.practicum.comment.dto.NewCommentDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.comment.MapperComment.toComment;
-import static ru.practicum.comment.MapperComment.toCommentDto;
+import static ru.practicum.comment.model.CommentMapper.toComment;
+import static ru.practicum.comment.model.CommentMapper.toCommentDto;
 
 
 @Service
@@ -80,7 +82,7 @@ public class CommentServiceImpl implements CommentService {
             throw new ConflictException("Редактировать комментарий может только его автор");
         }
         eventComment.setText(commentDto.getText());
-        EventComment updatedEventComment = commentRepository.save(eventComment);
+        EventComment updatedEventComment = eventComment;
         return toCommentDto(updatedEventComment);
     }
 
@@ -92,7 +94,7 @@ public class CommentServiceImpl implements CommentService {
         PageRequest page = PageRequest.of(from, size);
         List<EventComment> eventComments = commentRepository.findByEvent(event, page);
         return eventComments.stream()
-                .map(MapperComment::toCommentDto)
+                .map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList());
     }
 
@@ -111,7 +113,7 @@ public class CommentServiceImpl implements CommentService {
         }
         List<EventComment> eventComments = commentRepository.getCommentsByFilters(text, user, event, page);
         return eventComments.stream()
-                .map(MapperComment::toCommentDto)
+                .map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList());
     }
 
@@ -131,7 +133,7 @@ public class CommentServiceImpl implements CommentService {
         EventComment eventComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("Комментария с таким id  не найдено"));
         eventComment.setText(commentDto.getText());
-        EventComment updatedEventComment = commentRepository.save(eventComment);
+        EventComment updatedEventComment = eventComment;
         return toCommentDto(updatedEventComment);
     }
 
